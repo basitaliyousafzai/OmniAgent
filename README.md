@@ -82,55 +82,55 @@
 ```mermaid
 flowchart TB
     subgraph UI ["Native Desktop Workspace (React 18 + Vite + Monaco + xterm.js)"]
-        A[Cyberpunk HUD / Agent Chat]
-        B[Monaco Code Editor]
-        C[Interactive Terminal]
-        D[Human Safety Modal]
-        E[Live Display & Audio Monitor]
+        A["Cyberpunk HUD / Agent Chat"]
+        B["Monaco Code Editor"]
+        C["Interactive Terminal"]
+        D["Human Safety Modal"]
+        E["Live Display & Audio Monitor"]
     end
 
     subgraph Core ["FastAPI Master Backend (:8000)"]
-        F[WebSocket Event Bus]
-        G[ReAct Computer-Use Orchestrator]
-        H[Universal Provider Gateway]
-        I[Context Trimmer & Token Budget]
-        J[Local Secret Vault]
+        F["WebSocket Event Bus"]
+        G["ReAct Computer-Use Orchestrator"]
+        H["Universal Provider Gateway"]
+        I["Context Trimmer & Token Budget"]
+        J["Local Secret Vault"]
     end
 
     subgraph Safety ["Safety & Governance Fabric"]
-        K[Regex Guardrails Engine]
-        L[Approval Bridge]
-        M[Emergency Kill Switch (Ctrl+Esc)]
-        N[Audit Logger]
+        K["Regex Guardrails Engine"]
+        L["Approval Bridge"]
+        M["Emergency Kill Switch (Ctrl+Esc)"]
+        N["Audit Logger"]
     end
 
     subgraph OSPlane ["Desktop Automation Plane"]
-        O[Window Manager & Resolver]
-        P[GUI Input Controller (PyAutoGUI)]
-        Q[UI Automation Tree Inspector]
-        R[Sandboxed Shell Runner]
+        O["Window Manager & Resolver"]
+        P["GUI Input Controller (PyAutoGUI)"]
+        Q["UI Automation Tree Inspector"]
+        R["Sandboxed Shell Runner"]
     end
 
     subgraph Sensory ["Multimodal Sensory Subsystem"]
-        S[Screen Capture Engine]
-        T[Coordinate Mapper 0-1000]
-        U[Offline Whisper STT]
-        V[Offline Pyttsx3 TTS]
+        S["Screen Capture Engine"]
+        T["Coordinate Mapper 0-1000"]
+        U["Offline Whisper STT"]
+        V["Offline Pyttsx3 TTS"]
     end
 
     subgraph External ["External Desktop Targets"]
-        W[Microsoft Visual Studio]
-        X[SQL Server Management Studio]
-        Y[Browsers & Terminals]
+        W["Microsoft Visual Studio"]
+        X["SQL Server Management Studio"]
+        Y["Browsers & Terminals"]
     end
 
-    UI <-->|WebSocket / REST| Core
+    UI <-->|"WebSocket / REST"| Core
     Core --> Safety
     Core --> OSPlane
     Core --> Sensory
     OSPlane --> External
     Sensory --> External
-    Safety -->|Interrupt / Abort| OSPlane
+    Safety -->|"Interrupt / Abort"| OSPlane
 ```
 
 ---
