@@ -1,0 +1,28 @@
+# Isolated runtimes & dependencies
+.venv/
+.runtime/
+.cache/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Runtime data
+.omniagent_data/
+workspace_audit.log*
+*.log
+
+# Secrets
+.env
+.env.local
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vs/
+.idea/

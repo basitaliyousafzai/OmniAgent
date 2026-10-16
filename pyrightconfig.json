@@ -1,0 +1,13 @@
+{
+  "include": [
+    ".",
+    "backend"
+  ],
+  "extraPaths": [
+    ".",
+    "backend"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "reportMissingImports": "none"
+}
