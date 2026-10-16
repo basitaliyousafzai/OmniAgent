@@ -20,7 +20,9 @@ export default {
       },
       fontFamily: {
         mono: ["JetBrains Mono", "Fira Code", "Consolas", "monospace"],
-        sans: ["Inter", "system-ui", "sans-serif"]
+        sans: ["Inter", "system-ui", "sans-serif"],
+        cyber: ["Orbitron", "sans-serif"],
+        hud: ["Rajdhani", "sans-serif"]
       }
     }
   },

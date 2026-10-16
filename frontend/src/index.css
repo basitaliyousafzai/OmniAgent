@@ -23,10 +23,17 @@
 
 /* Cyberpunk / Hacker Grid & Scanline Background */
 .cyber-grid {
-  background-size: 30px 30px;
+  background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+}
+
+.cyber-grid-dense {
+  background-size: 16px 16px;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
 }
 
 .cyber-scanline {
@@ -41,51 +48,128 @@
   background: linear-gradient(
     to bottom,
     transparent 50%,
-    rgba(6, 182, 212, 0.02) 51%
+    rgba(6, 182, 212, 0.025) 51%
   );
   background-size: 100% 4px;
   pointer-events: none;
-  z-index: 10;
+  z-index: 20;
 }
 
 /* Neon Glow Accents */
 .glow-cyan {
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 10px rgba(6, 182, 212, 0.1);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.35), inset 0 0 10px rgba(6, 182, 212, 0.12);
 }
 
 .glow-indigo {
-  box-shadow: 0 0 18px rgba(99, 102, 241, 0.3), inset 0 0 10px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 18px rgba(99, 102, 241, 0.35), inset 0 0 10px rgba(99, 102, 241, 0.12);
 }
 
 .glow-emerald {
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 10px rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.35), inset 0 0 10px rgba(16, 185, 129, 0.12);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.15);
 }
 
 .glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 22px rgba(239, 68, 68, 0.45), inset 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
-/* Cyber radar pulse keyframe */
+/* Holographic Chamfered Corner Clip */
+.cyber-clip {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.cyber-clip-sm {
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+/* Cyber Radar & Reactor Keyframes */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes cyber-pulse-core {
+  0%, 100% {
+    transform: scale(0.96);
+    filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+  }
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 24px rgba(6, 182, 212, 0.95)) drop-shadow(0 0 35px rgba(99, 102, 241, 0.7));
+  }
+}
+
+@keyframes cyber-pulse-thinking {
+  0%, 100% {
+    transform: scale(0.94);
+    filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.7));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px rgba(236, 72, 153, 1)) drop-shadow(0 0 45px rgba(168, 85, 247, 0.8));
+  }
+}
+
 @keyframes cyber-radar {
   0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 0.4; }
+  50% { transform: scale(1.05); opacity: 0.35; }
   100% { transform: scale(0.95); opacity: 0.8; }
 }
 
-.animate-radar {
-  animation: cyber-radar 3s infinite ease-in-out;
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
 }
 
-/* Audio waveform equalizer animation */
-@keyframes bar-pulse-1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
-@keyframes bar-pulse-2 { 0%, 100% { height: 12px; } 50% { height: 6px; } }
-@keyframes bar-pulse-3 { 0%, 100% { height: 8px; } 50% { height: 18px; } }
-@keyframes bar-pulse-4 { 0%, 100% { height: 14px; } 50% { height: 5px; } }
+.animate-spin-reverse {
+  animation: spin-reverse 8s linear infinite;
+}
 
-.eq-bar-1 { animation: bar-pulse-1 0.8s infinite ease-in-out; }
-.eq-bar-2 { animation: bar-pulse-2 0.7s infinite ease-in-out; }
-.eq-bar-3 { animation: bar-pulse-3 0.9s infinite ease-in-out; }
-.eq-bar-4 { animation: bar-pulse-4 0.6s infinite ease-in-out; }
+.animate-pulse-core {
+  animation: cyber-pulse-core 3s ease-in-out infinite;
+}
+
+.animate-pulse-thinking {
+  animation: cyber-pulse-thinking 1.2s ease-in-out infinite;
+}
+
+.animate-radar {
+  animation: cyber-radar 2.8s infinite ease-in-out;
+}
+
+/* 16-Bar Audio Equalizer Pulse Animations */
+@keyframes eq-1 { 0%, 100% { height: 15%; } 50% { height: 85%; } }
+@keyframes eq-2 { 0%, 100% { height: 40%; } 50% { height: 95%; } }
+@keyframes eq-3 { 0%, 100% { height: 25%; } 50% { height: 60%; } }
+@keyframes eq-4 { 0%, 100% { height: 50%; } 50% { height: 100%; } }
+@keyframes eq-5 { 0%, 100% { height: 20%; } 50% { height: 75%; } }
+@keyframes eq-6 { 0%, 100% { height: 60%; } 50% { height: 90%; } }
+@keyframes eq-7 { 0%, 100% { height: 35%; } 50% { height: 65%; } }
+@keyframes eq-8 { 0%, 100% { height: 70%; } 50% { height: 100%; } }
+
+.eq-bar-1 { animation: eq-1 0.7s infinite ease-in-out; }
+.eq-bar-2 { animation: eq-2 0.55s infinite ease-in-out 0.1s; }
+.eq-bar-3 { animation: eq-3 0.85s infinite ease-in-out 0.2s; }
+.eq-bar-4 { animation: eq-4 0.6s infinite ease-in-out 0.05s; }
+.eq-bar-5 { animation: eq-5 0.9s infinite ease-in-out 0.15s; }
+.eq-bar-6 { animation: eq-6 0.75s infinite ease-in-out 0.25s; }
+.eq-bar-7 { animation: eq-7 0.65s infinite ease-in-out 0.1s; }
+.eq-bar-8 { animation: eq-8 0.5s infinite ease-in-out 0.3s; }
+.eq-bar-9 { animation: eq-3 0.8s infinite ease-in-out 0.12s; }
+.eq-bar-10 { animation: eq-2 0.6s infinite ease-in-out 0.22s; }
+.eq-bar-11 { animation: eq-6 0.7s infinite ease-in-out 0.18s; }
+.eq-bar-12 { animation: eq-4 0.55s infinite ease-in-out 0.08s; }
+.eq-bar-13 { animation: eq-1 0.9s infinite ease-in-out 0.28s; }
+.eq-bar-14 { animation: eq-7 0.65s infinite ease-in-out 0.14s; }
+.eq-bar-15 { animation: eq-5 0.8s infinite ease-in-out 0.2s; }
+.eq-bar-16 { animation: eq-8 0.75s infinite ease-in-out 0.05s; }
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {

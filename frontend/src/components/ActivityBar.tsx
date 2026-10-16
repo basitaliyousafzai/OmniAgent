@@ -6,8 +6,9 @@ import {
   ShieldAlert, 
   Settings, 
   OctagonAlert, 
-  Sparkles,
-  RefreshCw
+  Sparkles, 
+  RefreshCw,
+  Zap
 } from "lucide-react";
 
 export type ActiveTab = "explorer" | "os_control" | "terminal" | "audit";
@@ -32,14 +33,18 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
   pendingApprovalsCount
 }) => {
   return (
-    <div className="w-14 bg-[#090a0f] border-r border-indigo-950 flex flex-col items-center justify-between py-3 select-none z-20 shadow-2xl">
+    <div className="w-14 bg-[#08090d] border-r border-indigo-900/40 flex flex-col items-center justify-between py-3 select-none z-20 shadow-2xl relative">
+      {/* Background Micro Scanline */}
+      <div className="absolute inset-0 cyber-grid-dense opacity-20 pointer-events-none" />
+
       {/* Top Section: OmniAgent Cyber Logo & Main Views */}
-      <div className="flex flex-col items-center gap-4 w-full">
+      <div className="flex flex-col items-center gap-3.5 w-full z-10">
         <div 
-          className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 flex items-center justify-center shadow-lg shadow-cyan-500/30 mb-2 cursor-pointer transition-transform hover:scale-110 glow-cyan"
+          className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 flex items-center justify-center shadow-lg shadow-cyan-500/30 mb-2 cursor-pointer transition-transform hover:scale-110 glow-cyan relative"
           title="OmniAgent OS — Sovereign Desktop Agent"
         >
           <Sparkles className="w-5 h-5 text-white animate-pulse" />
+          <div className="absolute -bottom-1 w-2 h-0.5 bg-cyan-300 rounded-full" />
         </div>
 
         {/* Workspace Explorer */}
@@ -47,12 +52,15 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
           onClick={() => onSelectTab("explorer")}
           className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
             activeTab === "explorer"
-              ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/50 glow-cyan"
-              : "text-gray-400 hover:text-white hover:bg-white/5"
+              ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/60 glow-cyan"
+              : "text-gray-400 hover:text-cyan-300 hover:bg-white/5"
           }`}
           title="Workspace Explorer (Files & Code)"
         >
           <FolderTree className="w-5 h-5" />
+          {activeTab === "explorer" && (
+            <span className="absolute -left-1 w-1 h-5 bg-cyan-400 rounded-r-full" />
+          )}
         </button>
 
         {/* Full OS & Window Control Plane */}
@@ -60,40 +68,49 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
           onClick={() => onSelectTab("os_control")}
           className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
             activeTab === "os_control"
-              ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/50 glow-cyan"
-              : "text-gray-400 hover:text-white hover:bg-white/5"
+              ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/60 glow-cyan"
+              : "text-gray-400 hover:text-cyan-300 hover:bg-white/5"
           }`}
           title="OS Control Plane (Visual Studio, SSMS, Screen)"
         >
           <Monitor className="w-5 h-5" />
+          {activeTab === "os_control" && (
+            <span className="absolute -left-1 w-1 h-5 bg-cyan-400 rounded-r-full" />
+          )}
         </button>
 
         {/* Integrated Terminal */}
         <button
           onClick={() => onSelectTab("terminal")}
-          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors relative ${
+          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
             activeTab === "terminal"
-              ? "bg-ide-accent/20 text-indigo-400 border border-indigo-500/30"
-              : "text-gray-400 hover:text-white hover:bg-ide-hover"
+              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 glow-indigo"
+              : "text-gray-400 hover:text-indigo-300 hover:bg-white/5"
           }`}
           title="Terminal (PowerShell / PTY Multiplexer)"
         >
           <Terminal className="w-5 h-5" />
+          {activeTab === "terminal" && (
+            <span className="absolute -left-1 w-1 h-5 bg-indigo-400 rounded-r-full" />
+          )}
         </button>
 
         {/* Audit Log / Safety Fabric */}
         <button
           onClick={() => onSelectTab("audit")}
-          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors relative ${
+          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
             activeTab === "audit"
-              ? "bg-ide-accent/20 text-indigo-400 border border-indigo-500/30"
-              : "text-gray-400 hover:text-white hover:bg-ide-hover"
+              ? "bg-purple-500/20 text-purple-300 border border-purple-500/50 glow-magenta"
+              : "text-gray-400 hover:text-purple-300 hover:bg-white/5"
           }`}
           title="Safety & Audit Fabric (Logs & Interceptions)"
         >
           <ShieldAlert className="w-5 h-5" />
+          {activeTab === "audit" && (
+            <span className="absolute -left-1 w-1 h-5 bg-purple-400 rounded-r-full" />
+          )}
           {pendingApprovalsCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce shadow-[0_0_8px_#f59e0b]">
               {pendingApprovalsCount}
             </span>
           )}
@@ -101,12 +118,12 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
       </div>
 
       {/* Bottom Section: Kill Switch & Settings */}
-      <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex flex-col items-center gap-3 w-full z-10">
         {/* Emergency Kill Switch */}
         {killSwitchEngaged ? (
           <button
             onClick={onResetKillSwitch}
-            className="w-10 h-10 rounded-lg bg-red-600/30 text-red-400 border border-red-500 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all animate-pulse"
+            className="w-10 h-10 rounded-lg bg-red-600/30 text-red-400 border border-red-500 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]"
             title="Emergency Kill Switch Engaged! Click to Reset."
           >
             <RefreshCw className="w-5 h-5 animate-spin" />
@@ -114,7 +131,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
         ) : (
           <button
             onClick={onTriggerKillSwitch}
-            className="w-10 h-10 rounded-lg bg-red-950/40 text-red-400 hover:bg-red-600 hover:text-white border border-red-900/60 transition-all flex items-center justify-center group"
+            className="w-10 h-10 rounded-lg bg-red-950/40 text-red-400 hover:bg-red-600 hover:text-white border border-red-900/60 transition-all flex items-center justify-center group hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]"
             title="EMERGENCY STOP (Ctrl+Esc) - Aborts all automation instantly"
           >
             <OctagonAlert className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -124,7 +141,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
         {/* Settings Modal */}
         <button
           onClick={onOpenSettings}
-          className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-ide-hover transition-colors"
+          className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-cyan-300 hover:bg-white/5 transition-colors"
           title="Settings (Models, API Keys, Voice)"
         >
           <Settings className="w-5 h-5" />
@@ -133,3 +150,5 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
     </div>
   );
 };
+
+export default ActivityBar;
