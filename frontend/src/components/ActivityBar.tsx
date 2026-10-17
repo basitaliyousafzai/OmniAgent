@@ -8,10 +8,11 @@ import {
   OctagonAlert, 
   Sparkles, 
   RefreshCw,
-  Zap
+  Zap,
+  Users
 } from "lucide-react";
 
-export type ActiveTab = "explorer" | "os_control" | "terminal" | "audit";
+export type ActiveTab = "explorer" | "os_control" | "team" | "terminal" | "audit";
 
 interface ActivityBarProps {
   activeTab: ActiveTab;
@@ -75,6 +76,22 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
         >
           <Monitor className="w-5 h-5" />
           {activeTab === "os_control" && (
+            <span className="absolute -left-1 w-1 h-5 bg-cyan-400 rounded-r-full" />
+          )}
+        </button>
+
+        {/* Multi-Agent Swarm & Team Organization */}
+        <button
+          onClick={() => onSelectTab("team")}
+          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
+            activeTab === "team"
+              ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/60 glow-cyan"
+              : "text-gray-400 hover:text-cyan-300 hover:bg-white/5"
+          }`}
+          title="Multi-Agent Swarm Organization (6 Specialized Cores)"
+        >
+          <Users className="w-5 h-5" />
+          {activeTab === "team" && (
             <span className="absolute -left-1 w-1 h-5 bg-cyan-400 rounded-r-full" />
           )}
         </button>

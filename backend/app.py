@@ -20,7 +20,7 @@ from typing import Any, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 # Ensure backend root is on sys.path
@@ -400,7 +400,47 @@ async def websocket_terminal_endpoint(websocket: WebSocket):
         await websocket.close()
 
 
-# Mount static frontend production build if available
+@app.get("/api/providers/gemini/models")
+async def get_gemini_models() -> dict[str, Any]:
+    from gateway.provider_gateway import AVAILABLE_GEMINI_MODELS
+    return {"models": AVAILABLE_GEMINI_MODELS}
+
+
+# Mount static frontend production build if available, with resilient index fallback
+if FRONTEND_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
+
+@app.get("/")
+async def serve_index():
+    index_file = FRONTEND_DIST / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return HTMLResponse(
+        """<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="3">
+<title>OmniAgent OS — Initializing</title>
+<style>
+body { background: #0b0c10; color: #06b6d4; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+.box { border: 1px solid #1e293b; padding: 30px; border-radius: 12px; background: #0f172a; text-align: center; box-shadow: 0 0 20px rgba(6,182,212,0.2); }
+h1 { margin-top: 0; color: #38bdf8; }
+.spinner { width: 32px; height: 32px; border: 3px solid rgba(6,182,212,0.2); border-top-color: #06b6d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>⚡ OmniAgent OS Workspace</h1>
+  <div class="spinner"></div>
+  <p>Compiling native frontend bundle... Auto-refreshing in 3s</p>
+  <p style="font-size:11px;color:#94a3b8;">Run 'run_setup.bat' or 'cmd /c npm run build' in frontend folder</p>
+</div>
+</body>
+</html>"""
+    )
+
 if FRONTEND_DIST.exists():
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="frontend")
 

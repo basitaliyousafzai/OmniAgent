@@ -9,6 +9,7 @@ import { AgentChat } from "./components/AgentChat";
 import { StatusBar } from "./components/StatusBar";
 import { SettingsModal } from "./components/SettingsModal";
 import { TelemetryDeck } from "./components/TelemetryDeck";
+import { AgentTeamView } from "./components/AgentTeamView";
 import { useAgentSocket } from "./hooks/useAgentSocket";
 import { SystemStatus } from "./types";
 
@@ -26,6 +27,8 @@ export const App: React.FC = () => {
     currentStep,
     streamingThought,
     pendingApprovals,
+    voiceOutputEnabled,
+    setVoiceOutputEnabled,
     sendGoal,
     sendApproval,
     abortGoal
@@ -110,6 +113,14 @@ export const App: React.FC = () => {
 
             {activeTab === "os_control" && <OSControlView />}
 
+            {activeTab === "team" && (
+              <AgentTeamView 
+                isThinking={isThinking} 
+                currentStep={currentStep} 
+                activeTarget="OmniAgent Multi-Agent Swarm"
+              />
+            )}
+
             {activeTab === "terminal" && <TerminalView />}
 
             {activeTab === "audit" && <AuditView />}
@@ -123,6 +134,8 @@ export const App: React.FC = () => {
           currentStep={currentStep}
           streamingThought={streamingThought}
           pendingApprovals={pendingApprovals}
+          voiceOutputEnabled={voiceOutputEnabled}
+          onToggleVoiceOutput={() => setVoiceOutputEnabled(!voiceOutputEnabled)}
           onSendGoal={sendGoal}
           onSendApproval={sendApproval}
           onAbortGoal={abortGoal}

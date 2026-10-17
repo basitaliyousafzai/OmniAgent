@@ -150,8 +150,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
             </div>
           </div>
 
-          {/* Model Name Input */}
-          <div className="space-y-1">
+          {/* Model Name Input & Quick Model Selector */}
+          <div className="space-y-1.5">
             <label className="font-semibold text-gray-300 block">
               Model Identifier / Path
             </label>
@@ -159,8 +159,65 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
               type="text"
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              className="w-full bg-[#111217] border border-ide-border rounded-lg p-2 text-xs text-gray-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#111217] border border-ide-border rounded-lg p-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-500 font-mono"
             />
+
+            {/* Quick Model Selector Pills */}
+            {provider === "gemini" && (
+              <div className="space-y-1 pt-1">
+                <span className="text-[10px] text-gray-400 font-mono">Available Gemini Models:</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { id: "gemini-2.5-flash", label: "2.5 Flash (Flagship)" },
+                    { id: "gemini-2.5-pro", label: "2.5 Pro (Deep Reasoning)" },
+                    { id: "gemini-2.0-flash", label: "2.0 Flash (Realtime)" },
+                    { id: "gemini-2.0-flash-exp", label: "2.0 Flash Exp" },
+                    { id: "gemini-1.5-flash", label: "1.5 Flash (High Quota)" },
+                    { id: "gemini-1.5-pro", label: "1.5 Pro" }
+                  ].map((gm) => (
+                    <button
+                      key={gm.id}
+                      type="button"
+                      onClick={() => setModel(gm.id)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all ${
+                        model === gm.id
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500 font-bold glow-cyan"
+                          : "bg-black/40 text-gray-400 border-indigo-950 hover:text-white"
+                      }`}
+                    >
+                      {gm.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {provider === "openrouter" && (
+              <div className="space-y-1 pt-1">
+                <span className="text-[10px] text-gray-400 font-mono">Popular OpenRouter Models:</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { id: "anthropic/claude-sonnet-4.5", label: "Claude Sonnet 4.5" },
+                    { id: "google/gemini-2.0-flash-exp:free", label: "Gemini 2.0 Free (0 Credits)" },
+                    { id: "meta-llama/llama-3.3-70b-instruct:free", label: "Llama 3.3 70B Free" },
+                    { id: "openai/gpt-4o", label: "GPT-4o" }
+                  ].map((om) => (
+                    <button
+                      key={om.id}
+                      type="button"
+                      onClick={() => setModel(om.id)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all ${
+                        model === om.id
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500 font-bold glow-cyan"
+                          : "bg-black/40 text-gray-400 border-indigo-950 hover:text-white"
+                      }`}
+                    >
+                      {om.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* API Keys Vault */}

@@ -30,11 +30,18 @@ if exist ".venv\Scripts\python.exe" (
     .\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
 )
 
-:: 2. Check and Install Frontend Node Modules
+:: 2. Check and Install Frontend Node Modules & Build Production UI
 if not exist "frontend\node_modules" (
     echo [*] Installing local frontend node modules...
     cd frontend
     call npm.cmd install --cache "..\.cache\npm"
+    cd ..
+)
+
+if not exist "frontend\dist\index.html" (
+    echo [*] Building optimized native frontend UI bundle...
+    cd frontend
+    call npm.cmd run build
     cd ..
 )
 

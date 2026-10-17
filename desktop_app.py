@@ -90,14 +90,16 @@ def launch_native_app_window(url: str):
             browser_bin,
             f"--app={url}",
             f"--user-data-dir={temp_profile}",
-            "--window-size=1520,960",
-            "--window-position=50,50",
+            "--start-maximized",
+            "--window-size=1920,1080",
+            "--window-position=0,0",
+            "--force-dark-mode",
             "--disable-features=Translate,ChromeWhatsNewUI",
             "--no-first-run",
             "--no-default-browser-check",
             "--app-name=OmniAgent OS"
         ]
-        print(f"[*] Launching sovereign desktop application window via {browser_name} Runtime...")
+        print(f"[*] Launching sovereign desktop application window (Full Screen) via {browser_name} Runtime...")
         try:
             proc = subprocess.Popen(args)
             proc.wait()
@@ -132,6 +134,15 @@ def main():
     print("      OMNIAGENT OS: AUTONOMOUS MULTIMODAL DESKTOP AGENT")
     print("   [Mode: Sovereign Native Desktop App | AI Engine: Google Gemini]")
     print("=" * 70)
+
+    # 0. Ensure frontend bundle is built
+    dist_html = ROOT_DIR / "frontend" / "dist" / "index.html"
+    if not dist_html.exists():
+        print("[*] Production frontend bundle not found. Building UI bundle...")
+        try:
+            subprocess.run(["cmd", "/c", "npm", "run", "build"], cwd=str(ROOT_DIR / "frontend"), check=False)
+        except Exception as err:
+            print(f"[!] Warning building frontend: {err}")
 
     # 1. Start backend if not already listening
     if not is_backend_alive():

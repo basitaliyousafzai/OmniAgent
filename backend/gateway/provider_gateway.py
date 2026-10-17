@@ -15,6 +15,7 @@ complete `ToolCall` objects.
 """
 from __future__ import annotations
 
+import asyncio
 import copy
 import json
 import logging
@@ -35,7 +36,7 @@ ALL_PROVIDERS = OPENAI_COMPATIBLE + ("anthropic",)
 LOCAL_PROVIDERS = ("ollama", "vllm", "lmstudio")
 
 DEFAULT_MODELS: dict[str, str] = {
-    "gemini": "gemini-3.8-flash",
+    "gemini": "gemini-2.5-flash",
     "openrouter": "anthropic/claude-sonnet-4.5",
     "openai": "gpt-4o",
     "anthropic": "claude-3-5-sonnet-latest",
@@ -44,6 +45,15 @@ DEFAULT_MODELS: dict[str, str] = {
     "vllm": "default",
     "lmstudio": "local-model",
 }
+
+AVAILABLE_GEMINI_MODELS = [
+    {"id": "gemini-2.5-flash", "label": "Gemini 2.5 Flash (Recommended - Fastest & Flagship)", "context": "1M tokens"},
+    {"id": "gemini-2.5-pro", "label": "Gemini 2.5 Pro (Deep Multimodal Reasoning)", "context": "2M tokens"},
+    {"id": "gemini-2.0-flash", "label": "Gemini 2.0 Flash (Next-Gen Realtime)", "context": "1M tokens"},
+    {"id": "gemini-2.0-flash-exp", "label": "Gemini 2.0 Flash Exp (Experimental)", "context": "1M tokens"},
+    {"id": "gemini-1.5-flash", "label": "Gemini 1.5 Flash (High Quota Fallback)", "context": "1M tokens"},
+    {"id": "gemini-1.5-pro", "label": "Gemini 1.5 Pro (Complex Context)", "context": "2M tokens"},
+]
 
 PROVIDER_LABELS: dict[str, str] = {
     "gemini": "Google Gemini",
@@ -412,6 +422,36 @@ class ProviderGateway:
         except (openai.APIConnectionError, openai.APITimeoutError) as exc:
             raise ProviderError(provider, f"Connection failed: {exc}", True, None) from exc
         except openai.APIStatusError as exc:
+            # 1. Gemini 503 high demand spike auto-retry with fallback model
+            if provider == "gemini" and exc.status_code == 503:
+                log.warning("Gemini 503 spike detected. Retrying with gemini-1.5-flash...")
+                await asyncio.sleep(1.0)
+                try:
+                    return await self._complete_openai(provider, "gemini-1.5-flash", messages, tools, on_delta, temperature, max_tokens)
+                except Exception as retry_exc:
+                    log.warning("Gemini retry failed: %s", retry_exc)
+
+            # 2. OpenRouter 402 credit threshold auto-downscale & free model fallback
+            if provider == "openrouter" and exc.status_code == 402:
+                afford_match = re.search(r"can only afford (\d+)", exc.message)
+                if afford_match:
+                    afford = int(afford_match.group(1))
+                    if afford >= 120 and max_tokens > afford:
+                        log.warning("OpenRouter 402: Auto-scaling max_tokens down to %d", afford - 15)
+                        try:
+                            return await self._complete_openai(provider, model, messages, tools, on_delta, temperature, afford - 15)
+                        except Exception as retry_exc:
+                            log.warning("OpenRouter token scale retry failed: %s", retry_exc)
+
+                # Fallback to free zero-credit OpenRouter model
+                free_model = "google/gemini-2.0-flash-exp:free"
+                if model != free_model:
+                    log.warning("OpenRouter 402: Falling back to free model %s...", free_model)
+                    try:
+                        return await self._complete_openai(provider, free_model, messages, tools, on_delta, temperature, 1024)
+                    except Exception as free_exc:
+                        log.warning("OpenRouter free fallback failed: %s", free_exc)
+
             can_fallback = exc.status_code >= 500 or exc.status_code in (402, 429)
             raise ProviderError(provider, f"HTTP {exc.status_code}: {exc.message}", can_fallback, exc.status_code) from exc
 

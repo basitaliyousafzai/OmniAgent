@@ -20,7 +20,9 @@ import {
   Zap,
   Activity,
   Command,
-  Flame
+  Flame,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { ApprovalRequestData, ChatMessage, RiskLevel } from "../types";
 import { useVoiceRecorder } from "../hooks/useVoiceRecorder";
@@ -33,6 +35,8 @@ interface AgentChatProps {
   currentStep: number;
   streamingThought: string;
   pendingApprovals: ApprovalRequestData[];
+  voiceOutputEnabled?: boolean;
+  onToggleVoiceOutput?: () => void;
   onSendGoal: (goal: string, imageB64?: string) => void;
   onSendApproval: (id: string, approved: boolean, note?: string) => void;
   onAbortGoal: () => void;
@@ -44,6 +48,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   currentStep,
   streamingThought,
   pendingApprovals,
+  voiceOutputEnabled = true,
+  onToggleVoiceOutput,
   onSendGoal,
   onSendApproval,
   onAbortGoal
@@ -306,6 +312,22 @@ export const AgentChat: React.FC<AgentChatProps> = ({
             />
 
             <div className="absolute right-2 bottom-2.5 flex items-center gap-1">
+              {/* AI Voice Output Speaker Toggle */}
+              {onToggleVoiceOutput && (
+                <button
+                  type="button"
+                  onClick={onToggleVoiceOutput}
+                  className={`p-1.5 rounded-lg text-xs transition-colors ${
+                    voiceOutputEnabled
+                      ? "text-cyan-400 bg-cyan-950/40 border border-cyan-800/50 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
+                      : "text-gray-500 hover:text-white hover:bg-white/10"
+                  }`}
+                  title={voiceOutputEnabled ? "AI Agent Voice: Speaking Aloud (Click to Mute)" : "AI Agent Voice: Muted (Click to Unmute)"}
+                >
+                  {voiceOutputEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+              )}
+
               {/* Voice Input Button */}
               <button
                 type="button"
