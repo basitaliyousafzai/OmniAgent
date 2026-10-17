@@ -293,5 +293,25 @@ MASTER_TOOLS: list[dict[str, Any]] = [
                 "required": ["query"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "save_learned_skill",
+            "description": "Save a newly discovered desktop workflow, successful UI recipe, or operating pattern into the agent's persistent self-learning memory bank.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task_intent": {"type": "string", "description": "Clear description of the goal achieved (e.g. 'Navigate to GitHub repo in Chrome')."},
+                    "action_sequence": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Ordered sequence of steps taken."
+                    },
+                    "key_insights": {"type": "string", "description": "Key takeaways, UI elements, or shortcuts used."}
+                },
+                "required": ["task_intent", "action_sequence", "key_insights"]
+            }
+        }
     }
 ]

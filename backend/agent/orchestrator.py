@@ -264,6 +264,15 @@ class AgentOrchestrator:
                 res_output = json.dumps(res, indent=2)
                 is_gui_action = True
 
+            elif name == "save_learned_skill":
+                task_intent = str(args.get("task_intent", ""))
+                seq = list(args.get("action_sequence", []))
+                insights = str(args.get("key_insights", ""))
+                from agent.self_learner import self_learner
+                res = self_learner.record_experience(task_intent, seq, insights)
+                res_ok = res.get("ok", False)
+                res_output = json.dumps(res, indent=2)
+
             else:
                 res_ok = False
                 res_output = f"Unknown tool: {name}"
@@ -324,8 +333,8 @@ class AgentOrchestrator:
         audit.log("session_started", session_id=session_id, goal=user_goal)
         await emit({"type": "agent_start", "data": {"session_id": session_id, "goal": user_goal}})
 
-        # Build initial messages
-        system_prompt = build_system_prompt()
+        # Build initial messages with dynamic self-learned experiences
+        system_prompt = build_system_prompt(goal=user_goal)
         workspace_overview = index_workspace()
 
         system_msg = {
@@ -454,6 +463,16 @@ class AgentOrchestrator:
                 }
             })
             audit.log("session_completed", session_id=session_id, steps=step)
+            # Autonomous Self-Training: Distill and record learned skills permanently into memory bank
+            try:
+                from agent.self_learner import self_learner
+                self_learner.distill_from_trajectory(
+                    goal=user_goal,
+                    history=history,
+                    completed=step < MAX_AGENT_STEPS
+                )
+            except Exception as learn_exc:
+                log.debug("Self-learning auto-training notice: %s", learn_exc)
 
         except asyncio.CancelledError:
             log.info("Session %s cancelled.", session_id)
