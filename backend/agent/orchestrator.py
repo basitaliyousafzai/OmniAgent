@@ -296,11 +296,19 @@ class AgentOrchestrator:
                     quality=int(s.get("screenshot_jpeg_quality", 70)),
                     grid=False
                 )
-                image_b64 = cap.b64
-                screenshot_file = cap.file_name
-                res_output += f"\n\n[Visual Feedback]: {cap.describe()}"
+                if cap and hasattr(cap, "b64"):
+                    image_b64 = cap.b64
+                    screenshot_file = getattr(cap, "file_name", None)
+                    feedback_desc = "Screen updated successfully."
+                    try:
+                        feedback_desc = cap.describe()
+                    except Exception:
+                        feedback_desc = f"Display state captured ({getattr(cap, 'width', 0)}x{getattr(cap, 'height', 0)})."
+
+                    base_out = str(res_output or "").strip()
+                    res_output = f"{base_out}\n\n[Visual Feedback]: {feedback_desc}".strip()
             except Exception as cap_exc:
-                log.debug("Auto-screenshot failed: %s", cap_exc)
+                log.warning("Auto-screenshot verification skipped: %s", cap_exc)
 
         result = ToolResult(
             tool_call_id=tool_call.id,
