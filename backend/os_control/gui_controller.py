@@ -17,6 +17,12 @@ from typing import Any, Sequence
 import pyautogui
 import pyperclip
 
+try:
+    import pytweening
+    _EASE_OUT_QUAD = pytweening.easeOutQuad
+except Exception:
+    _EASE_OUT_QUAD = getattr(pyautogui, "easeOutQuad", None)
+
 from gateway.vault import vault
 from multimodal.coordinate_mapper import mapper
 from safety.kill_switch import kill_switch
@@ -45,7 +51,7 @@ class GUIController:
         except Exception:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
-        pyautogui.moveTo(px, py, duration=0.28, tween=pyautogui.easeOutQuad)
+        pyautogui.moveTo(px, py, duration=0.28, tween=_EASE_OUT_QUAD)
         return px, py
 
     def mouse_click(
@@ -64,7 +70,7 @@ class GUIController:
         px, py = mapper.to_pixels(norm_x, norm_y)
 
         # Smooth glide to target coordinates like a real human operator
-        pyautogui.moveTo(px, py, duration=0.24, tween=pyautogui.easeOutQuad)
+        pyautogui.moveTo(px, py, duration=0.24, tween=_EASE_OUT_QUAD)
         time.sleep(0.04)
 
         if click_type == "double":

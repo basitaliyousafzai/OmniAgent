@@ -102,22 +102,22 @@ class UIAutomationEngine:
         if not IS_WINDOWS:
             return {"ok": False, "error": "UI element click is only supported on Windows."}
 
+        criteria: dict[str, Any] = {}
+        if name:
+            criteria["title"] = name
+        if control_type:
+            criteria["control_type"] = control_type
+        if auto_id:
+            criteria["auto_id"] = auto_id
+
+        if not criteria:
+            return {"ok": False, "error": "Must specify at least one search criterion (name, control_type, auto_id).", "criteria": criteria}
+
         try:
             from pywinauto import Application
 
             app = Application(backend="uia").connect(handle=hwnd)
             window = app.window(handle=hwnd)
-
-            criteria: dict[str, Any] = {}
-            if name:
-                criteria["title"] = name
-            if control_type:
-                criteria["control_type"] = control_type
-            if auto_id:
-                criteria["auto_id"] = auto_id
-
-            if not criteria:
-                return {"ok": False, "error": "Must specify at least one search criterion (name, control_type, auto_id)."}
 
             ctrl = window.child_window(**criteria)
             try:

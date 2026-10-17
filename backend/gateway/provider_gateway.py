@@ -378,7 +378,7 @@ class ProviderGateway:
             kwargs["stream_options"] = {"include_usage": True}
 
         content_parts: list[str] = []
-        tool_acc: dict[int, dict[str, str]] = {}
+        tool_acc: dict[int, dict[str, Any]] = {}
         usage = TokenUsage()
         finish = ""
         try:
@@ -404,8 +404,8 @@ class ProviderGateway:
                         if tc.id:
                             slot["id"] = tc.id
                         extra = getattr(tc, "extra_content", None)
-                        if extra:
-                            slot["extra_content"] = extra
+                        if extra is not None:
+                            slot["extra_content"] = extra if isinstance(extra, dict) else (extra.model_dump() if hasattr(extra, "model_dump") else {"content": str(extra)})
                         if tc.function is not None:
                             if tc.function.name:
                                 slot["name"] += tc.function.name
@@ -494,7 +494,7 @@ class ProviderGateway:
                     id=slot["id"] or new_id("call_"),
                     name=slot["name"],
                     arguments=_parse_arguments(slot["arguments"]),
-                    extra_content=slot.get("extra_content")
+                    extra_content=slot.get("extra_content") if isinstance(slot.get("extra_content"), dict) else None
                 )
             )
         if usage.total == 0:

@@ -314,7 +314,7 @@ class AgentOrchestrator:
             tool_call_id=tool_call.id,
             name=name,
             ok=res_ok,
-            output=res_output,
+            output=str(res_output if res_output is not None else ""),
             image_b64=image_b64,
             screenshot_file=screenshot_file,
             extra=extra
