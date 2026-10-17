@@ -263,5 +263,35 @@ MASTER_TOOLS: list[dict[str, Any]] = [
                 "required": ["element_name"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "browser_navigate",
+            "description": "Navigate to a specific URL in web browser (Chrome, Edge, Firefox). Focuses or launches the browser, creates a new tab, enters the URL, and loads the webpage.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "description": "The full URL or web address to navigate to (e.g., 'https://github.com/basitaliyousafzai/OmniAgent')."},
+                    "browser": {"type": "string", "description": "Browser name (default: 'chrome'). Options: 'chrome', 'msedge', 'firefox'."}
+                },
+                "required": ["url"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ssms_run_query",
+            "description": "Execute a SQL query inside SQL Server Management Studio (SSMS). Connects to default server if connect dialog is open, opens query tab, pastes query, and presses F5 to run.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "The exact SQL statement to execute (e.g. 'SELECT @@VERSION;', 'SELECT TOP 10 * FROM sys.databases;')."},
+                    "database": {"type": "string", "description": "Optional target database context (e.g. 'dbInvAcc_Online')."}
+                },
+                "required": ["query"]
+            }
+        }
     }
 ]

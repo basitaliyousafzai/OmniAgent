@@ -246,6 +246,24 @@ class AgentOrchestrator:
                     res_output = json.dumps(res)
                     is_gui_action = True
 
+            elif name == "browser_navigate":
+                target_url = str(args.get("url", ""))
+                browser_name = str(args.get("browser", "chrome") or "chrome")
+                res = app_orchestrator.browser_open_url(target_url, browser=browser_name)
+                res_ok = res.get("ok", False)
+                res_output = json.dumps(res, indent=2)
+                is_gui_action = True
+
+            elif name == "ssms_run_query":
+                sql_q = str(args.get("query", ""))
+                db_name = args.get("database")
+                if db_name and f"use {db_name.lower()}" not in sql_q.lower():
+                    sql_q = f"USE [{db_name}];\nGO\n{sql_q}"
+                res = app_orchestrator.ssms_execute_query(sql_q)
+                res_ok = res.get("ok", False)
+                res_output = json.dumps(res, indent=2)
+                is_gui_action = True
+
             else:
                 res_ok = False
                 res_output = f"Unknown tool: {name}"

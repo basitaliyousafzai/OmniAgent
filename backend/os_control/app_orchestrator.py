@@ -223,8 +223,23 @@ class AppOrchestrator:
     # ----------------------------------------------------------------------- #
     def browser_open_url(self, url: str, browser: str = "chrome") -> dict[str, Any]:
         """Launches or brings browser to foreground and navigates to URL."""
-        res = launch_or_focus(browser, [url])
-        return {"ok": True, "action": "browser_open_url", "url": url, "result": res}
+        from os_control.window_manager import find_windows, focus_window, launch_app
+        wins = find_windows(browser)
+        if wins:
+            log.info("Focusing existing browser window (%s) and navigating to %s...", wins[0].title, url)
+            focus_window(wins[0].hwnd)
+            time.sleep(0.4)
+            # Open new tab with Ctrl+T and navigate
+            gui_controller.send_hotkey(["ctrl", "t"])
+            time.sleep(0.3)
+            gui_controller.type_string(url, press_enter=True)
+            time.sleep(1.5)
+            return {"ok": True, "action": "browser_open_url", "url": url, "method": "new_tab_navigated"}
+        else:
+            log.info("Launching new %s instance with %s...", browser, url)
+            res = launch_app(browser, [url])
+            time.sleep(2.0)
+            return {"ok": True, "action": "browser_open_url", "url": url, "method": "launched_with_url", "result": res}
 
     def browser_reload(self, browser: str = "chrome") -> dict[str, Any]:
         wins = find_windows(browser)
