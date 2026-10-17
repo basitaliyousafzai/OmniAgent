@@ -222,7 +222,7 @@ MASTER_TOOLS: list[dict[str, Any]] = [
                     },
                     "action": {
                         "type": "string",
-                        "description": "Action recipe (e.g. VS: 'build', 'debug', 'errors'; SSMS: 'new_query', 'run_query'; Browser: 'open', 'reload')."
+                        "description": "Action recipe (e.g. VS: 'build', 'debug', 'errors'; SSMS: 'connect', 'new_query', 'run_query'; Browser: 'open', 'reload')."
                     },
                     "argument": {
                         "type": "string",

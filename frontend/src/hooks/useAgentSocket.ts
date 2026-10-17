@@ -18,15 +18,24 @@ export function speakAgentVoice(text: string) {
       utterance.rate = 1.05;
       utterance.pitch = 1.0;
       const voices = window.speechSynthesis.getVoices();
-      const preferred = voices.find(
-        (v) =>
-          v.lang.startsWith("en") &&
-          (v.name.includes("Natural") ||
-            v.name.includes("Google") ||
-            v.name.includes("Microsoft") ||
-            v.name.includes("David") ||
-            v.name.includes("Zira"))
-      );
+      const isSouthAsian = /(bhai|aap|main|karo|karein|hoga|theek|shukriya|chal|hai|kya|karte|gaya|ssms|query)/i.test(spoken);
+      const preferred =
+        voices.find(
+          (v) =>
+            isSouthAsian &&
+            (v.lang.includes("IN") || v.lang.includes("PK") || v.lang.startsWith("hi") || v.lang.startsWith("ur")) &&
+            (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Microsoft") || v.name.includes("Neerja") || v.name.includes("Heera") || v.name.includes("Ravi"))
+        ) ||
+        voices.find(
+          (v) =>
+            v.lang.startsWith("en") &&
+            (v.name.includes("Natural") ||
+              v.name.includes("Google") ||
+              v.name.includes("Microsoft") ||
+              v.name.includes("David") ||
+              v.name.includes("Zira"))
+        ) ||
+        voices[0];
       if (preferred) utterance.voice = preferred;
       window.speechSynthesis.speak(utterance);
     } catch (e) {

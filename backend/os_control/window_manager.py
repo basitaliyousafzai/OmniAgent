@@ -489,10 +489,16 @@ def wait_for_window(query: str, timeout: float = 30.0, pid: Optional[int] = None
 
 def launch_or_focus(query: str, args: list[str] | None = None, timeout: float = 45.0) -> dict[str, Any]:
     existing = find_windows(query)
-    if existing and not args:
+    if existing:
         target = existing[0]
         ok = focus_window(target.hwnd)
-        return {"action": "focused", "focused": ok, "window": target.as_dict()}
+        return {
+            "action": "focused_existing",
+            "focused": ok,
+            "reused_existing_instance": True,
+            "window": target.as_dict(),
+            "message": f"Application '{target.title}' is already open. Reusing active window instance."
+        }
     launched = launch_app(query, args)
     if not launched.get("launched"):
         return {"action": "launch_failed", "focused": False, **launched}

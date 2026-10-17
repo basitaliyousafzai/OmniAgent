@@ -45,7 +45,7 @@ class GUIController:
         except Exception:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
-        pyautogui.moveTo(px, py, duration=0.2)
+        pyautogui.moveTo(px, py, duration=0.28, tween=pyautogui.easeOutQuad)
         return px, py
 
     def mouse_click(
@@ -63,12 +63,16 @@ class GUIController:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
 
+        # Smooth glide to target coordinates like a real human operator
+        pyautogui.moveTo(px, py, duration=0.24, tween=pyautogui.easeOutQuad)
+        time.sleep(0.04)
+
         if click_type == "double":
-            pyautogui.doubleClick(px, py)
+            pyautogui.doubleClick(button=button)
         elif click_type == "right":
-            pyautogui.rightClick(px, py)
+            pyautogui.rightClick()
         else:
-            pyautogui.click(px, py, button=button)
+            pyautogui.click(button=button)
 
         self._sleep_action_delay()
         return {"action": "click", "norm_x": norm_x, "norm_y": norm_y, "pixel_x": px, "pixel_y": py, "click_type": click_type}

@@ -86,49 +86,136 @@ class AppOrchestrator:
     # ----------------------------------------------------------------------- #
     # SQL Server Management Studio (SSMS) Recipes
     # ----------------------------------------------------------------------- #
-    def ssms_new_query(self) -> dict[str, Any]:
-        """Focuses SSMS and opens a new query tab (Ctrl+N)."""
-        wins = find_windows("ssms")
-        if not wins:
-            # Try launching or focusing
-            res = launch_or_focus("ssms")
-            if not res.get("focused"):
-                return {"ok": False, "error": "SSMS is not running and could not be focused."}
+    def _find_ssms_dialog(self) -> Optional[Any]:
+        """Finds any active 'Connect to Server' dialog belonging to SSMS."""
+        from os_control.window_manager import list_windows
+        for w in list_windows():
+            if "connect to server" in w.title.lower():
+                return w
+        return None
 
-        wins = find_windows("ssms")
-        if wins:
-            focus_window(wins[0].hwnd)
-            time.sleep(0.3)
-            gui_controller.send_hotkey(["ctrl", "n"])
-            time.sleep(0.5)
-            return {"ok": True, "action": "ssms_new_query", "hotkey": "Ctrl+N"}
-        return {"ok": False, "error": "Could not locate SSMS window."}
+    def _find_ssms_main_window(self) -> Optional[Any]:
+        """Finds the main SSMS workspace window (ignoring modal connect dialogs)."""
+        from os_control.window_manager import list_windows
+        for w in list_windows():
+            if ("ssms" in w.process_name.lower() or "sql server management studio" in w.title.lower()) and "connect to server" not in w.title.lower():
+                return w
+        return None
+
+    def ssms_connect_default(self) -> dict[str, Any]:
+        """
+        Connects SSMS to the default server.
+        If the modal 'Connect to Server' dialog is visible, focuses it and sends Enter
+        (or clicks Connect) to establish the database engine connection.
+        Waits until the connection is established and the main IDE window is ready.
+        """
+        dialog = self._find_ssms_dialog()
+        if not dialog:
+            # If SSMS is not open at all, launch or focus it
+            wins = find_windows("ssms")
+            if not wins:
+                res = launch_or_focus("ssms")
+                if not res.get("focused") and not res.get("reused_existing_instance"):
+                    time.sleep(2.0)
+            # Re-check for dialog after launch
+            for _ in range(10):
+                dialog = self._find_ssms_dialog()
+                if dialog:
+                    break
+                time.sleep(0.5)
+
+        if dialog:
+            log.info("Focusing SSMS 'Connect to Server' dialog (hwnd=%s)...", dialog.hwnd)
+            focus_window(dialog.hwnd)
+            time.sleep(0.4)
+            # Enter triggers the default 'Connect' button with existing server name
+            log.info("Sending ENTER to connect to default SQL Server instance...")
+            gui_controller.send_hotkey(["enter"])
+
+            # Wait for modal dialog to dismiss (connection established)
+            for _ in range(15):
+                time.sleep(0.5)
+                if not self._find_ssms_dialog():
+                    log.info("SSMS 'Connect to Server' dialog dismissed. Connected successfully.")
+                    break
+            time.sleep(0.8)
+
+        # Bring main SSMS window to foreground
+        main_win = self._find_ssms_main_window()
+        if main_win:
+            focus_window(main_win.hwnd)
+            time.sleep(0.4)
+            return {"ok": True, "action": "ssms_connect_default", "window": main_win.title}
+
+        return {"ok": True, "action": "ssms_connect_default", "note": "Connection command sent."}
+
+    def ssms_new_query(self) -> dict[str, Any]:
+        """
+        Ensures SSMS is connected to default server, brings main window to front,
+        and opens a fresh SQL Query editor tab (Ctrl+N).
+        """
+        # 1. First ensure any 'Connect to Server' dialog is connected
+        self.ssms_connect_default()
+
+        # 2. Locate main SSMS window
+        main_win = self._find_ssms_main_window()
+        if not main_win:
+            wins = find_windows("ssms")
+            if wins:
+                main_win = wins[0]
+
+        if not main_win:
+            return {"ok": False, "error": "Could not locate active SQL Server Management Studio window."}
+
+        focus_window(main_win.hwnd)
+        time.sleep(0.4)
+
+        # 3. Open New Query tab via Ctrl+N
+        log.info("Sending Ctrl+N to open new query window in SSMS...")
+        gui_controller.send_hotkey(["ctrl", "n"])
+        time.sleep(0.8)
+
+        return {"ok": True, "action": "ssms_new_query", "hotkey": "Ctrl+N", "window": main_win.title}
 
     def ssms_execute_query(self, sql_query: Optional[str] = None) -> dict[str, Any]:
         """
-        Focuses SSMS. If sql_query is provided, pastes it into the active query
-        editor, then presses F5 to execute.
+        Focuses SSMS, ensures connection to default server, opens new query tab if needed,
+        pastes/types the query, and executes via F5.
         """
-        wins = find_windows("ssms")
-        if not wins:
+        # Ensure connection first
+        self.ssms_connect_default()
+
+        main_win = self._find_ssms_main_window()
+        if not main_win:
+            wins = find_windows("ssms")
+            if wins:
+                main_win = wins[0]
+
+        if not main_win:
             return {"ok": False, "error": "SQL Server Management Studio (SSMS) is not running."}
 
-        focus_window(wins[0].hwnd)
-        time.sleep(0.3)
+        focus_window(main_win.hwnd)
+        time.sleep(0.4)
 
         if sql_query:
-            # Paste query into editor
+            # If query is provided, open a clean new query tab first to avoid overriding existing text
+            gui_controller.send_hotkey(["ctrl", "n"])
+            time.sleep(0.8)
+
+            # Paste/type query safely
             gui_controller.type_string(sql_query, press_enter=True)
-            time.sleep(0.3)
+            time.sleep(0.4)
 
         # F5 executes query in SSMS
+        log.info("Sending F5 to execute SQL query in SSMS...")
         gui_controller.send_hotkey(["f5"])
-        time.sleep(0.5)
+        time.sleep(0.6)
         return {
             "ok": True,
             "action": "ssms_execute_query",
             "hotkey": "F5",
-            "query_length": len(sql_query) if sql_query else 0
+            "query_length": len(sql_query) if sql_query else 0,
+            "window": main_win.title
         }
 
     # ----------------------------------------------------------------------- #
@@ -170,9 +257,11 @@ class AppOrchestrator:
                 return self.vs_open_error_list()
 
         if "ssms" in app or "sql" in app or "management studio" in app:
-            if act in ("new_query", "new_tab"):
+            if act in ("connect", "connect_default", "login"):
+                return self.ssms_connect_default()
+            if act in ("new_query", "new_tab", "query"):
                 return self.ssms_new_query()
-            if act in ("run_query", "execute", "paste_and_run"):
+            if act in ("run_query", "execute", "run", "paste_and_run"):
                 return self.ssms_execute_query(argument)
 
         if any(b in app for b in ("chrome", "edge", "firefox", "browser")):
