@@ -36,7 +36,7 @@ ALL_PROVIDERS = OPENAI_COMPATIBLE + ("anthropic",)
 LOCAL_PROVIDERS = ("ollama", "vllm", "lmstudio")
 
 DEFAULT_MODELS: dict[str, str] = {
-    "gemini": "gemini-2.5-flash",
+    "gemini": "gemini-3.1-flash-lite",
     "openrouter": "anthropic/claude-sonnet-4.5",
     "openai": "gpt-4o",
     "anthropic": "claude-3-5-sonnet-latest",
@@ -47,12 +47,16 @@ DEFAULT_MODELS: dict[str, str] = {
 }
 
 AVAILABLE_GEMINI_MODELS = [
-    {"id": "gemini-2.5-flash", "label": "Gemini 2.5 Flash (Recommended - Fastest & Flagship)", "context": "1M tokens"},
-    {"id": "gemini-2.5-pro", "label": "Gemini 2.5 Pro (Deep Multimodal Reasoning)", "context": "2M tokens"},
+    {"id": "gemini-3.1-flash-lite", "label": "Gemini 3.1 Flash Lite (500 Requests/Day - Ultra High Quota)", "context": "1M tokens"},
+    {"id": "gemini-3.5-flash-lite", "label": "Gemini 3.5 Flash Lite (500 Requests/Day - Ultra High Quota)", "context": "1M tokens"},
+    {"id": "gemini-2.5-flash", "label": "Gemini 2.5 Flash (Flagship Multimodal)", "context": "1M tokens"},
+    {"id": "gemini-2.5-flash-lite", "label": "Gemini 2.5 Flash Lite (Fast 10 RPM)", "context": "1M tokens"},
     {"id": "gemini-2.0-flash", "label": "Gemini 2.0 Flash (Next-Gen Realtime)", "context": "1M tokens"},
     {"id": "gemini-2.0-flash-exp", "label": "Gemini 2.0 Flash Exp (Experimental)", "context": "1M tokens"},
-    {"id": "gemini-1.5-flash", "label": "Gemini 1.5 Flash (High Quota Fallback)", "context": "1M tokens"},
-    {"id": "gemini-1.5-pro", "label": "Gemini 1.5 Pro (Complex Context)", "context": "2M tokens"},
+    {"id": "gemini-1.5-flash", "label": "Gemini 1.5 Flash (Reliable Fallback)", "context": "1M tokens"},
+    {"id": "gemini-1.5-pro", "label": "Gemini 1.5 Pro (Deep Analysis)", "context": "2M tokens"},
+    {"id": "gemini-3-flash", "label": "Gemini 3 Flash", "context": "1M tokens"},
+    {"id": "gemini-3.8-flash", "label": "Gemini 3.8 Flash (Preview - 20 RPD limit)", "context": "1M tokens"},
 ]
 
 PROVIDER_LABELS: dict[str, str] = {
@@ -414,6 +418,31 @@ class ProviderGateway:
         except openai.PermissionDeniedError as exc:
             raise ProviderError(provider, f"Permission denied: {exc.message}", True, 403) from exc
         except openai.RateLimitError as exc:
+            if provider == "gemini":
+                # Model quota rotation list - prioritize models with 500 RPD
+                gemini_quota_chain = [
+                    "gemini-3.1-flash-lite",
+                    "gemini-3.5-flash-lite",
+                    "gemini-2.5-flash",
+                    "gemini-2.5-flash-lite",
+                    "gemini-2.0-flash",
+                    "gemini-1.5-flash"
+                ]
+                for candidate in gemini_quota_chain:
+                    if candidate != model:
+                        log.warning(
+                            "Gemini 429 quota reached on %s. Auto-rotating to high-quota model %s...",
+                            model,
+                            candidate,
+                        )
+                        await asyncio.sleep(0.5)
+                        try:
+                            return await self._complete_openai(
+                                provider, candidate, messages, tools, on_delta, temperature, max_tokens
+                            )
+                        except Exception as rot_exc:
+                            log.warning("Quota rotation to %s failed: %s", candidate, rot_exc)
+
             raise ProviderError(provider, f"Rate limited / quota exceeded: {exc.message}", True, 429) from exc
         except openai.NotFoundError as exc:
             raise ProviderError(provider, f"Model or endpoint not found: {exc.message}", True, 404) from exc

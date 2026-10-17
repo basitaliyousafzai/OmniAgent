@@ -120,7 +120,10 @@ class UIAutomationEngine:
                 return {"ok": False, "error": "Must specify at least one search criterion (name, control_type, auto_id)."}
 
             ctrl = window.child_window(**criteria)
-            ctrl.wait("visible", timeout=timeout)
+            try:
+                ctrl.wait("visible", timeout=timeout)
+            except Exception:
+                ctrl.wait("exists", timeout=2.0)
 
             # Try invoke or click
             try:

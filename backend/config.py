@@ -72,8 +72,8 @@ IGNORED_DIR_NAMES: frozenset[str] = frozenset(
 )
 
 DEFAULT_SETTINGS: dict = {
-    "provider": "openrouter",
-    "model": "anthropic/claude-3.5-sonnet",
+    "provider": "gemini",
+    "model": "gemini-3.1-flash-lite",
     "fallback_chain": ["gemini", "openrouter", "anthropic", "openai", "xai", "ollama"],
     "ollama_base_url": "http://127.0.0.1:11434",
     "ollama_model": "llama3.1",
