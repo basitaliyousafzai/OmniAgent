@@ -308,12 +308,12 @@ MASTER_TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "ssms_run_query",
-            "description": "Execute a SQL query inside SQL Server Management Studio (SSMS). Connects to default server if connect dialog is open, opens query tab, pastes query, and presses F5 to run.",
+            "description": "Execute a SQL query inside SQL Server Management Studio (SSMS). Connects to default server if connect dialog is open, opens query tab, pastes query, and executes with F5. CRITICAL: After execution, you MUST visually inspect the Results grid on screen using capture_desktop_view to extract and report the returned data rows to the user.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string", "description": "The exact SQL statement to execute (e.g. 'SELECT @@VERSION;', 'SELECT TOP 10 * FROM sys.databases;')."},
-                    "database": {"type": "string", "description": "Optional target database context (e.g. 'dbInvAcc_Online')."}
+                    "query": {"type": "string", "description": "The exact SQL statement to execute (e.g. 'USE [soukwears]; SELECT TOP 1 * FROM sales ORDER BY NetTotal DESC;')."},
+                    "database": {"type": "string", "description": "Optional target database context (e.g. 'soukwears')."}
                 },
                 "required": ["query"]
             }

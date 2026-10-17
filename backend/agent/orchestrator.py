@@ -486,26 +486,32 @@ class AgentOrchestrator:
                                 break
 
                     # Intermediate actions that require observation/interaction to be considered complete
-                    is_intermediate_action = last_action_name in ("browser_navigate", "gui_type_string")
+                    is_intermediate_action = last_action_name in ("browser_navigate", "gui_type_string", "launch_or_focus_app")
 
-                    # 3. Dynamic evaluation: early step without observation or asking question
-                    is_premature = (is_intermediate_action or (is_asking_question and step <= 4)) and continuation_count < 2
+                    # Check if the user asked to see data/results, but the assistant provided generic text without reading the screen
+                    user_asked_for_results = any(w in user_goal.lower() for w in [
+                        "dikhao", "show", "highest", "zyada", "total", "net", "find", "result", "konsa", "kis", "table"
+                    ])
+                    has_data_extracted = bool(re.search(r"\d+", content_text))
+                    is_query_unobserved = user_asked_for_results and (last_action_name in ("ssms_run_query", "launch_or_focus_app") or step <= 3) and not has_data_extracted
+
+                    # Dynamic evaluation: premature stop if intermediate action, unobserved query, or question asked
+                    is_premature = (is_intermediate_action or is_query_unobserved or (is_asking_question and step <= 4)) and continuation_count < 2
 
                     if is_premature:
                         continuation_count += 1
                         log.info(
-                            "Dynamic Autonomous Continuation Guard triggered at step %d (intermediate=%s, question=%s).",
-                            step, is_intermediate_action, is_asking_question
+                            "Dynamic Autonomous Continuation Guard triggered at step %d (intermediate=%s, unobserved_query=%s, question=%s).",
+                            step, is_intermediate_action, is_query_unobserved, is_asking_question
                         )
                         continuation_msg = {
                             "role": "user",
                             "content": (
-                                f"[SYSTEM NOTIFICATION - 100% DYNAMIC AUTONOMOUS WORKFLOW]: "
-                                f"You have initiated an action for the goal: \"{user_goal}\", but the final result is not verified on screen yet. "
-                                f"Do not defer, wait for the user, or ask questions. "
-                                f"Dynamically inspect the screen, scroll, or observe the updated state using your tools "
-                                f"(`capture_desktop_view`, `wait_and_observe`, `gui_scroll`, `gui_mouse_action`) "
-                                f"and proceed until the full objective is completely achieved!"
+                                f"[SYSTEM NOTIFICATION - 100% VISUAL OBSERVATION REQUIRED]: "
+                                f"The user asked: \"{user_goal}\". You have NOT finished this task yet! "
+                                f"DO NOT give a generic closing statement like 'aapka kaam kar diya hai' without visually reading the screen! "
+                                f"If you launched an app or ran a query, you MUST call `capture_desktop_view` or `wait_and_observe` to inspect the screen, "
+                                f"read the Results grid / window contents, extract the exact data values, and report them to the user!"
                             )
                         }
                         history.append(continuation_msg)

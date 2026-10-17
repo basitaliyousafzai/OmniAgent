@@ -179,10 +179,10 @@ class AppOrchestrator:
 
     def ssms_execute_query(self, sql_query: Optional[str] = None) -> dict[str, Any]:
         """
-        Focuses SSMS, ensures connection to default server, opens new query tab if needed,
-        pastes/types the query, and executes via F5.
+        Focuses SSMS, ensures connection to default server, opens new query tab,
+        focuses the editor canvas, pastes/types the query, and executes via F5.
         """
-        # Ensure connection first
+        # Ensure connection first if Connect dialog is open
         self.ssms_connect_default()
 
         main_win = self._find_ssms_main_window()
@@ -195,27 +195,43 @@ class AppOrchestrator:
             return {"ok": False, "error": "SQL Server Management Studio (SSMS) is not running."}
 
         focus_window(main_win.hwnd)
-        time.sleep(0.4)
+        time.sleep(0.5)
 
         if sql_query:
-            # If query is provided, open a clean new query tab first to avoid overriding existing text
+            # 1. Open a clean new query tab via Ctrl+N
+            log.info("Sending Ctrl+N to open new query window in SSMS...")
             gui_controller.send_hotkey(["ctrl", "n"])
-            time.sleep(0.8)
+            # SSMS language service takes 1.5 - 2.0s to initialize the new tab
+            time.sleep(1.8)
 
-            # Paste/type query safely
+            # 2. Click in the center of the query editor canvas to guarantee focus
+            try:
+                import pyautogui
+                editor_x = main_win.left + int(main_win.width * 0.55)
+                editor_y = main_win.top + int(main_win.height * 0.45)
+                pyautogui.click(editor_x, editor_y)
+                time.sleep(0.3)
+            except Exception as click_err:
+                log.warning("Could not click editor canvas: %s", click_err)
+
+            # 3. Paste/type query safely
+            log.info("Typing SQL query into SSMS editor...")
             gui_controller.type_string(sql_query, press_enter=True)
-            time.sleep(0.4)
+            time.sleep(0.5)
 
-        # F5 executes query in SSMS
+        # 4. F5 executes query in SSMS
         log.info("Sending F5 to execute SQL query in SSMS...")
         gui_controller.send_hotkey(["f5"])
-        time.sleep(0.6)
+        # Wait for query execution engine to return rows into Results grid
+        time.sleep(1.5)
+
         return {
             "ok": True,
             "action": "ssms_execute_query",
             "hotkey": "F5",
             "query_length": len(sql_query) if sql_query else 0,
-            "window": main_win.title
+            "window": main_win.title,
+            "note": "Query executed via F5. Inspect the Results grid on screen to extract and read the output data rows."
         }
 
     # ----------------------------------------------------------------------- #
