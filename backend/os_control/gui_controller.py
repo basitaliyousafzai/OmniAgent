@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, Sequence
+from typing import Any, Optional, Sequence
 
 import pyautogui
 import pyperclip
@@ -177,19 +177,33 @@ class GUIController:
         self._sleep_action_delay()
         return {"action": "press_key", "key": key, "presses": presses}
 
-    def scroll(self, clicks: int, norm_x: Optional[float] = None, norm_y: Optional[float] = None) -> dict[str, Any]:
+    def scroll(
+        self,
+        clicks: int,
+        norm_x: Optional[float] = None,
+        norm_y: Optional[float] = None
+    ) -> dict[str, Any]:
         """
         Scrolls the mouse wheel.
         clicks: positive for scrolling up, negative for scrolling down (e.g. -5 to scroll down).
         norm_x, norm_y: optional normalized coordinates to position mouse over before scrolling.
         """
         kill_switch.check()
+        try:
+            from os_control.window_manager import ensure_interactive_desktop
+            ensure_interactive_desktop()
+        except Exception:
+            pass
+
         if norm_x is not None and norm_y is not None:
             px, py = mapper.to_pixels(norm_x, norm_y)
-            pyautogui.moveTo(px, py)
-        pyautogui.scroll(clicks)
+            pyautogui.moveTo(px, py, duration=0.08, tween=_ease_out_quad)
+            pyautogui.scroll(clicks, x=px, y=py)
+        else:
+            pyautogui.scroll(clicks)
+
         self._sleep_action_delay()
-        return {"action": "scroll", "clicks": clicks}
+        return {"action": "scroll", "clicks": clicks, "norm_x": norm_x, "norm_y": norm_y}
 
 
 gui_controller = GUIController()
