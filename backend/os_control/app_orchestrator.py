@@ -106,45 +106,36 @@ class AppOrchestrator:
         """
         Connects SSMS to the default server.
         If the modal 'Connect to Server' dialog is visible, focuses it and sends Enter
-        (or clicks Connect) to establish the database engine connection.
-        Waits until the connection is established and the main IDE window is ready.
+        to establish the database engine connection quickly.
         """
         dialog = self._find_ssms_dialog()
         if not dialog:
-            # If SSMS is not open at all, launch or focus it
             wins = find_windows("ssms")
             if not wins:
                 res = launch_or_focus("ssms")
                 if not res.get("focused") and not res.get("reused_existing_instance"):
-                    time.sleep(2.0)
-            # Re-check for dialog after launch
-            for _ in range(10):
-                dialog = self._find_ssms_dialog()
-                if dialog:
-                    break
-                time.sleep(0.5)
+                    time.sleep(1.0)
+            dialog = self._find_ssms_dialog()
 
         if dialog:
             log.info("Focusing SSMS 'Connect to Server' dialog (hwnd=%s)...", dialog.hwnd)
             focus_window(dialog.hwnd)
-            time.sleep(0.4)
-            # Enter triggers the default 'Connect' button with existing server name
+            time.sleep(0.15)
             log.info("Sending ENTER to connect to default SQL Server instance...")
             gui_controller.send_hotkey(["enter"])
 
-            # Wait for modal dialog to dismiss (connection established)
-            for _ in range(15):
-                time.sleep(0.5)
+            # Fast check for modal dialog dismissal (up to 2s max)
+            for _ in range(8):
+                time.sleep(0.2)
                 if not self._find_ssms_dialog():
-                    log.info("SSMS 'Connect to Server' dialog dismissed. Connected successfully.")
+                    log.info("SSMS 'Connect to Server' dialog dismissed.")
                     break
-            time.sleep(0.8)
 
         # Bring main SSMS window to foreground
         main_win = self._find_ssms_main_window()
         if main_win:
             focus_window(main_win.hwnd)
-            time.sleep(0.4)
+            time.sleep(0.15)
             return {"ok": True, "action": "ssms_connect_default", "window": main_win.title}
 
         return {"ok": True, "action": "ssms_connect_default", "note": "Connection command sent."}
@@ -152,12 +143,10 @@ class AppOrchestrator:
     def ssms_new_query(self) -> dict[str, Any]:
         """
         Ensures SSMS is connected to default server, brings main window to front,
-        and opens a fresh SQL Query editor tab (Ctrl+N).
+        and opens a fresh SQL Query editor tab (Ctrl+N) instantly.
         """
-        # 1. First ensure any 'Connect to Server' dialog is connected
         self.ssms_connect_default()
 
-        # 2. Locate main SSMS window
         main_win = self._find_ssms_main_window()
         if not main_win:
             wins = find_windows("ssms")
@@ -168,21 +157,21 @@ class AppOrchestrator:
             return {"ok": False, "error": "Could not locate active SQL Server Management Studio window."}
 
         focus_window(main_win.hwnd)
-        time.sleep(0.4)
+        time.sleep(0.15)
 
-        # 3. Open New Query tab via Ctrl+N
         log.info("Sending Ctrl+N to open new query window in SSMS...")
         gui_controller.send_hotkey(["ctrl", "n"])
-        time.sleep(0.8)
+        time.sleep(0.4)
 
         return {"ok": True, "action": "ssms_new_query", "hotkey": "Ctrl+N", "window": main_win.title}
 
     def ssms_execute_query(self, sql_query: Optional[str] = None) -> dict[str, Any]:
         """
-        Focuses SSMS, ensures connection to default server, opens new query tab,
-        focuses the editor canvas, pastes/types the query, and executes via F5.
+        Fast & adaptive SSMS execution:
+        Focuses SSMS, opens new query tab via Ctrl+N, clicks the editor canvas,
+        pastes/types query, and executes with F5 in under 1.5 seconds.
         """
-        # Ensure connection first if Connect dialog is open
+        # Fast connect check if dialog is open
         self.ssms_connect_default()
 
         main_win = self._find_ssms_main_window()
@@ -195,35 +184,33 @@ class AppOrchestrator:
             return {"ok": False, "error": "SQL Server Management Studio (SSMS) is not running."}
 
         focus_window(main_win.hwnd)
-        time.sleep(0.5)
+        time.sleep(0.15)
 
         if sql_query:
-            # 1. Open a clean new query tab via Ctrl+N
-            log.info("Sending Ctrl+N to open new query window in SSMS...")
+            # 1. Open new query tab via Ctrl+N
+            log.info("Sending Ctrl+N to open fresh query window in SSMS...")
             gui_controller.send_hotkey(["ctrl", "n"])
-            # SSMS language service takes 1.5 - 2.0s to initialize the new tab
-            time.sleep(1.8)
+            time.sleep(0.5)
 
-            # 2. Click in the center of the query editor canvas to guarantee focus
+            # 2. Click in center of query editor canvas to guarantee typing focus
             try:
                 import pyautogui
                 editor_x = main_win.left + int(main_win.width * 0.55)
                 editor_y = main_win.top + int(main_win.height * 0.45)
                 pyautogui.click(editor_x, editor_y)
-                time.sleep(0.3)
+                time.sleep(0.1)
             except Exception as click_err:
                 log.warning("Could not click editor canvas: %s", click_err)
 
-            # 3. Paste/type query safely
-            log.info("Typing SQL query into SSMS editor...")
+            # 3. Paste/type query safely & fast
+            log.info("Pasting SQL query into SSMS editor...")
             gui_controller.type_string(sql_query, press_enter=True)
-            time.sleep(0.5)
+            time.sleep(0.15)
 
         # 4. F5 executes query in SSMS
         log.info("Sending F5 to execute SQL query in SSMS...")
         gui_controller.send_hotkey(["f5"])
-        # Wait for query execution engine to return rows into Results grid
-        time.sleep(1.5)
+        time.sleep(0.5)
 
         return {
             "ok": True,

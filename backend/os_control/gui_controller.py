@@ -37,7 +37,7 @@ class GUIController:
         pass
 
     def _sleep_action_delay(self) -> None:
-        delay = float(vault.get("gui_action_delay", 0.08))
+        delay = float(vault.get("gui_action_delay", 0.02))
         if delay > 0:
             time.sleep(delay)
 
@@ -49,7 +49,7 @@ class GUIController:
         except Exception:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
-        pyautogui.moveTo(px, py, duration=0.10, tween=_ease_out_quad)
+        pyautogui.moveTo(px, py, duration=0.03, tween=_ease_out_quad)
         return px, py
 
     def mouse_click(
@@ -67,9 +67,8 @@ class GUIController:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
 
-        # Fast and smooth human-like glide to target coordinates
-        pyautogui.moveTo(px, py, duration=0.09, tween=_ease_out_quad)
-        time.sleep(0.01)
+        # Super-fast decisive snap to target coordinates
+        pyautogui.moveTo(px, py, duration=0.02, tween=_ease_out_quad)
 
         if click_type == "double":
             pyautogui.doubleClick(button=button)
@@ -118,10 +117,10 @@ class GUIController:
                 pass
 
             pyperclip.copy(text)
-            time.sleep(0.05)
+            time.sleep(0.02)
             # Paste hotkey
             pyautogui.hotkey("ctrl", "v")
-            time.sleep(0.1)
+            time.sleep(0.03)
 
             # Restore clipboard after small delay
             try:
@@ -130,7 +129,7 @@ class GUIController:
             except Exception:
                 pass
         else:
-            pyautogui.write(text, interval=0.005)
+            pyautogui.write(text, interval=0.002)
 
         if press_enter:
             pyautogui.press("enter")

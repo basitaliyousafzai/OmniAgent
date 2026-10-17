@@ -340,11 +340,12 @@ class AgentOrchestrator:
         s = vault.settings()
         if is_gui_action and s.get("auto_screenshot_after_gui_action", True):
             try:
-                time.sleep(0.08)
+                time.sleep(0.04)
+                with_grid = name in ("launch_or_focus_app", "browser_navigate")
                 cap = screen_capture.capture(
                     max_width=int(s.get("screenshot_max_width", 1366)),
                     quality=int(s.get("screenshot_jpeg_quality", 70)),
-                    grid=False
+                    grid=with_grid
                 )
                 if cap and hasattr(cap, "b64"):
                     image_b64 = cap.b64
