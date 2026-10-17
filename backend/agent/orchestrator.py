@@ -273,6 +273,20 @@ class AgentOrchestrator:
                 res_ok = res.get("ok", False)
                 res_output = json.dumps(res, indent=2)
 
+            elif name == "set_system_volume":
+                pct = int(args.get("percent", 50))
+                from os_control.volume_controller import volume_controller
+                res = volume_controller.set_volume(pct)
+                res_ok = res.get("ok", False)
+                res_output = json.dumps(res, indent=2)
+
+            elif name == "skip_ads":
+                b_name = str(args.get("browser", "chrome") or "chrome")
+                res = app_orchestrator.skip_youtube_ads(b_name)
+                res_ok = res.get("ok", False)
+                res_output = json.dumps(res, indent=2)
+                is_gui_action = True
+
             else:
                 res_ok = False
                 res_output = f"Unknown tool: {name}"
@@ -290,7 +304,7 @@ class AgentOrchestrator:
         s = vault.settings()
         if is_gui_action and s.get("auto_screenshot_after_gui_action", True):
             try:
-                time.sleep(0.3)
+                time.sleep(0.08)
                 cap = screen_capture.capture(
                     max_width=int(s.get("screenshot_max_width", 1366)),
                     quality=int(s.get("screenshot_jpeg_quality", 70)),

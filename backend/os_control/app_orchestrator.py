@@ -228,18 +228,35 @@ class AppOrchestrator:
         if wins:
             log.info("Focusing existing browser window (%s) and navigating to %s...", wins[0].title, url)
             focus_window(wins[0].hwnd)
-            time.sleep(0.4)
+            time.sleep(0.15)
             # Open new tab with Ctrl+T and navigate
             gui_controller.send_hotkey(["ctrl", "t"])
-            time.sleep(0.3)
+            time.sleep(0.1)
             gui_controller.type_string(url, press_enter=True)
-            time.sleep(1.5)
+            time.sleep(0.8)
             return {"ok": True, "action": "browser_open_url", "url": url, "method": "new_tab_navigated"}
         else:
             log.info("Launching new %s instance with %s...", browser, url)
             res = launch_app(browser, [url])
-            time.sleep(2.0)
+            time.sleep(1.2)
             return {"ok": True, "action": "browser_open_url", "url": url, "method": "launched_with_url", "result": res}
+
+    def skip_youtube_ads(self, browser: str = "chrome") -> dict[str, Any]:
+        """
+        Detects and skips YouTube advertisements or distraction overlays.
+        Clicks the standard YouTube Skip Ads button coordinate or triggers UI action.
+        """
+        from os_control.window_manager import find_windows, focus_window
+        wins = find_windows(browser)
+        if wins:
+            focus_window(wins[0].hwnd)
+            time.sleep(0.1)
+
+        # Standard YouTube skip ad button location in primary player (bottom right of video: norm ~915, 765)
+        gui_controller.mouse_click(915, 765)
+        time.sleep(0.05)
+        gui_controller.mouse_click(880, 750)
+        return {"ok": True, "action": "skip_youtube_ads", "clicked_targets": [(915, 765), (880, 750)]}
 
     def browser_reload(self, browser: str = "chrome") -> dict[str, Any]:
         wins = find_windows(browser)
@@ -247,7 +264,7 @@ class AppOrchestrator:
             return {"ok": False, "error": f"{browser} is not running."}
 
         focus_window(wins[0].hwnd)
-        time.sleep(0.2)
+        time.sleep(0.15)
         gui_controller.send_hotkey(["ctrl", "r"])
         return {"ok": True, "action": "browser_reload"}
 

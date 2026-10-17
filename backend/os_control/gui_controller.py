@@ -29,7 +29,7 @@ log = logging.getLogger("omniagent.gui_controller")
 
 # PyAutoGUI configuration (Safety handled via OmniAgent sovereign Ctrl+Esc Kill Switch)
 pyautogui.FAILSAFE = False
-pyautogui.PAUSE = 0.05
+pyautogui.PAUSE = 0.01
 
 
 class GUIController:
@@ -37,7 +37,7 @@ class GUIController:
         pass
 
     def _sleep_action_delay(self) -> None:
-        delay = float(vault.get("gui_action_delay", 0.4))
+        delay = float(vault.get("gui_action_delay", 0.08))
         if delay > 0:
             time.sleep(delay)
 
@@ -49,7 +49,7 @@ class GUIController:
         except Exception:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
-        pyautogui.moveTo(px, py, duration=0.28, tween=_ease_out_quad)
+        pyautogui.moveTo(px, py, duration=0.10, tween=_ease_out_quad)
         return px, py
 
     def mouse_click(
@@ -67,9 +67,9 @@ class GUIController:
             pass
         px, py = mapper.to_pixels(norm_x, norm_y)
 
-        # Smooth glide to target coordinates like a real human operator
-        pyautogui.moveTo(px, py, duration=0.24, tween=_ease_out_quad)
-        time.sleep(0.04)
+        # Fast and smooth human-like glide to target coordinates
+        pyautogui.moveTo(px, py, duration=0.09, tween=_ease_out_quad)
+        time.sleep(0.01)
 
         if click_type == "double":
             pyautogui.doubleClick(button=button)
@@ -130,7 +130,7 @@ class GUIController:
             except Exception:
                 pass
         else:
-            pyautogui.write(text, interval=0.02)
+            pyautogui.write(text, interval=0.005)
 
         if press_enter:
             pyautogui.press("enter")

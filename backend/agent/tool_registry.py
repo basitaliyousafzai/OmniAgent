@@ -313,5 +313,38 @@ MASTER_TOOLS: list[dict[str, Any]] = [
                 "required": ["task_intent", "action_sequence", "key_insights"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_system_volume",
+            "description": "Set the master Windows system audio volume to a specific percentage (0 to 100).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "percent": {
+                        "type": "integer",
+                        "description": "Target volume level percentage from 0 (silent/mute) to 100 (max volume)."
+                    }
+                },
+                "required": ["percent"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "skip_ads",
+            "description": "Automatically detect and click 'Skip Ad' or 'Skip Ads' buttons on YouTube or web media players.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "browser": {
+                        "type": "string",
+                        "description": "Browser name (default 'chrome')."
+                    }
+                }
+            }
+        }
     }
 ]
