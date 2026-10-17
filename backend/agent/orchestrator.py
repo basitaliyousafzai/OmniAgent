@@ -155,6 +155,16 @@ class AgentOrchestrator:
                 res_output = json.dumps(res)
                 is_gui_action = True
 
+            elif name == "gui_scroll":
+                clicks = int(args.get("clicks", -5))
+                nx = args.get("norm_x")
+                ny = args.get("norm_y")
+                norm_x = float(nx) if nx is not None else None
+                norm_y = float(ny) if ny is not None else None
+                res = gui_controller.scroll(clicks, norm_x=norm_x, norm_y=norm_y)
+                res_output = json.dumps(res)
+                is_gui_action = True
+
             elif name == "capture_desktop_view":
                 grid = bool(args.get("grid", False))
                 s = vault.settings()
@@ -287,6 +297,31 @@ class AgentOrchestrator:
                 res_output = json.dumps(res, indent=2)
                 is_gui_action = True
 
+            elif name == "wait_and_observe":
+                wait_sec = min(30, max(1, int(args.get("seconds", 6))))
+                reason = str(args.get("reason", "Waiting for asynchronous generation / webpage update"))
+                log.info("Agent waiting %d seconds: %s", wait_sec, reason)
+                await asyncio.sleep(wait_sec)
+                s = vault.settings()
+                cap = screen_capture.capture(
+                    max_width=int(s.get("screenshot_max_width", 1366)),
+                    quality=int(s.get("screenshot_jpeg_quality", 70)),
+                    grid=False
+                )
+                if cap and hasattr(cap, "b64"):
+                    image_b64 = cap.b64
+                    screenshot_file = getattr(cap, "file_name", None)
+                    desc = "Screen updated successfully."
+                    try:
+                        desc = cap.describe()
+                    except Exception:
+                        pass
+                    res_output = f"Waited {wait_sec}s for '{reason}'. Updated screen captured.\n[Visual Feedback]: {desc}"
+                else:
+                    res_output = f"Waited {wait_sec}s for '{reason}'."
+                res_ok = True
+                is_gui_action = False
+
             else:
                 res_ok = False
                 res_output = f"Unknown tool: {name}"
@@ -382,6 +417,7 @@ class AgentOrchestrator:
         self._session_histories[session_id] = history
 
         step = 0
+        continuation_count = 0
         s = vault.settings()
         token_budget = int(s.get("context_token_budget", 60000))
         max_images = int(s.get("max_images_in_context", 2))
@@ -435,8 +471,46 @@ class AgentOrchestrator:
                     }
                 })
 
-                # If no tool calls were made, the agent finished its reasoning
+                # If no tool calls were made, check if the agent prematurely finished
                 if not turn.tool_calls:
+                    content_lower = (turn.content or "").lower()
+                    # Detect premature deferral to user or incomplete generation
+                    premature_deferral = any(p in content_lower for p in [
+                        "screen par check", "check karein", "check kijiye", "check your screen",
+                        "generate kar raha", "is generating", "ab main", "ab check", "now i will",
+                        "please login", "login kar lein", "login nahi hain", "login karke"
+                    ])
+                    # Detect if previous action was merely opening or initial typing
+                    last_was_initial_gui = False
+                    if history:
+                        for h in reversed(history):
+                            if h.get("role") == "tool":
+                                if h.get("name") in ("browser_navigate", "gui_type_string", "gui_mouse_action"):
+                                    last_was_initial_gui = True
+                                break
+
+                    if (premature_deferral or (last_was_initial_gui and step <= 3)) and continuation_count < 2:
+                        continuation_count += 1
+                        log.info(
+                            "Autonomous Continuation Guard triggered at step %d (deferral=%s, initial_gui=%s).",
+                            step, premature_deferral, last_was_initial_gui
+                        )
+                        continuation_msg = {
+                            "role": "user",
+                            "content": (
+                                f"[SYSTEM NOTIFICATION - 100% AUTONOMOUS COMPLETION REQUIRED]: "
+                                f"The user asked: \"{user_goal}\". You have NOT finished this task yet! "
+                                f"DO NOT ask the user to check their screen, login, or perform actions. "
+                                f"You have direct full control over the OS and browser. "
+                                f"If you are waiting for image or content generation, call `wait_and_observe(seconds=8)`. "
+                                f"If you need to view the page or search results, call `gui_scroll` or `capture_desktop_view`. "
+                                f"If you need to click or interact, call `gui_mouse_action`. "
+                                f"Continue your autonomous execution NOW using your tools until the goal is 100% complete on screen!"
+                            )
+                        }
+                        history.append(continuation_msg)
+                        continue
+
                     log.info("Session %s completed at step %d with no further tool calls.", session_id, step)
                     break
 

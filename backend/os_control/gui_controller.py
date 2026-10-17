@@ -177,5 +177,20 @@ class GUIController:
         self._sleep_action_delay()
         return {"action": "press_key", "key": key, "presses": presses}
 
+    def scroll(self, clicks: int, norm_x: Optional[float] = None, norm_y: Optional[float] = None) -> dict[str, Any]:
+        """
+        Scrolls the mouse wheel.
+        clicks: positive for scrolling up, negative for scrolling down (e.g. -5 to scroll down).
+        norm_x, norm_y: optional normalized coordinates to position mouse over before scrolling.
+        """
+        kill_switch.check()
+        if norm_x is not None and norm_y is not None:
+            px, py = mapper.to_pixels(norm_x, norm_y)
+            pyautogui.moveTo(px, py)
+        pyautogui.scroll(clicks)
+        self._sleep_action_delay()
+        return {"action": "scroll", "clicks": clicks}
+
 
 gui_controller = GUIController()
+

@@ -82,6 +82,31 @@ MASTER_TOOLS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "gui_scroll",
+            "description": "Scroll the active window or webpage. Use negative clicks to scroll down (e.g. -5 to scroll down a page), positive clicks to scroll up.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "clicks": {
+                        "type": "integer",
+                        "description": "Number of scroll clicks. Negative for scrolling down (e.g. -5, -8 to view content below), positive for scrolling up."
+                    },
+                    "norm_x": {
+                        "type": "number",
+                        "description": "Optional normalized X coordinate (0-1000) to position the mouse before scrolling."
+                    },
+                    "norm_y": {
+                        "type": "number",
+                        "description": "Optional normalized Y coordinate (0-1000) to position the mouse before scrolling."
+                    }
+                },
+                "required": ["clicks"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "capture_desktop_view",
             "description": "Capture screenshot of current display to inspect the visual state of active desktop applications.",
             "parameters": {
@@ -342,6 +367,26 @@ MASTER_TOOLS: list[dict[str, Any]] = [
                     "browser": {
                         "type": "string",
                         "description": "Browser name (default 'chrome')."
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "wait_and_observe",
+            "description": "Wait a specified number of seconds for an asynchronous task, AI generation (Gemini/ChatGPT image or text), webpage rendering, or job to finish, then automatically takes a fresh screenshot to observe the final result.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "seconds": {
+                        "type": "integer",
+                        "description": "Number of seconds to wait (e.g. 5, 8, 10). Default is 6."
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "Reason for waiting (e.g. 'Waiting for Gemini image generation to complete')."
                     }
                 }
             }
