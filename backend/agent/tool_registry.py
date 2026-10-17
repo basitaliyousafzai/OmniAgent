@@ -359,8 +359,24 @@ MASTER_TOOLS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "dismiss_overlay_or_ad",
+            "description": "Dynamically detect and dismiss advertisements, cookie consent banners, modal dialogs, or skip buttons on any web page or desktop application using UI Automation and visual detection.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_app_or_browser": {
+                        "type": "string",
+                        "description": "Target application name or browser (default 'chrome')."
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "skip_ads",
-            "description": "Automatically detect and click 'Skip Ad' or 'Skip Ads' buttons on YouTube or web media players.",
+            "description": "Dynamically detect and dismiss video advertisements, popups, or overlays on web media players.",
             "parameters": {
                 "type": "object",
                 "properties": {

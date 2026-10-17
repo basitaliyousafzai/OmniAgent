@@ -243,20 +243,38 @@ class AppOrchestrator:
 
     def skip_youtube_ads(self, browser: str = "chrome") -> dict[str, Any]:
         """
-        Detects and skips YouTube advertisements or distraction overlays.
-        Clicks the standard YouTube Skip Ads button coordinate or triggers UI action.
+        Dynamically detects and dismisses advertisements, overlays, or modal prompts
+        using Windows UI Automation accessibility tree inspection.
+        Zero hardcoded coordinates.
         """
         from os_control.window_manager import find_windows, focus_window
+        from os_control.ui_automation import ui_automation
+
         wins = find_windows(browser)
-        if wins:
-            focus_window(wins[0].hwnd)
+        hwnd = wins[0].hwnd if wins else 0
+        if hwnd:
+            focus_window(hwnd)
             time.sleep(0.1)
 
-        # Standard YouTube skip ad button location in primary player (bottom right of video: norm ~915, 765)
-        gui_controller.mouse_click(915, 765)
-        time.sleep(0.05)
-        gui_controller.mouse_click(880, 750)
-        return {"ok": True, "action": "skip_youtube_ads", "clicked_targets": [(915, 765), (880, 750)]}
+        # Dynamic search for interactive skip/close controls across accessibility tree
+        target_names = [
+            "Skip Ad", "Skip Ads", "Skip ad", "Skip",
+            "Dismiss", "Close", "No thanks", "Not now",
+            "Accept all", "Reject all", "I agree"
+        ]
+
+        if hwnd:
+            for name in target_names:
+                res = ui_automation.click_element(hwnd, name=name, control_type="Button")
+                if res.get("ok"):
+                    log.info("Dynamically dismissed overlay element '%s' via UI automation.", name)
+                    return {"ok": True, "action": "dynamic_overlay_dismissed", "element": name, "method": "uia"}
+
+        return {
+            "ok": True,
+            "action": "dynamic_overlay_check_completed",
+            "note": "No standard accessibility overlay button matched. Use capture_desktop_view(grid=True) and gui_mouse_action for visual coordinate interaction."
+        }
 
     def browser_reload(self, browser: str = "chrome") -> dict[str, Any]:
         wins = find_windows(browser)

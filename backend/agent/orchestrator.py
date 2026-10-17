@@ -290,8 +290,8 @@ class AgentOrchestrator:
                 res_ok = res.get("ok", False)
                 res_output = json.dumps(res, indent=2)
 
-            elif name == "skip_ads":
-                b_name = str(args.get("browser", "chrome") or "chrome")
+            elif name in ("dismiss_overlay_or_ad", "skip_ads"):
+                b_name = str(args.get("target_app_or_browser") or args.get("browser", "chrome") or "chrome")
                 res = app_orchestrator.skip_youtube_ads(b_name)
                 res_ok = res.get("ok", False)
                 res_output = json.dumps(res, indent=2)
@@ -471,41 +471,41 @@ class AgentOrchestrator:
                     }
                 })
 
-                # If no tool calls were made, check if the agent prematurely finished
+                # If no tool calls were made, dynamically verify if the agent genuinely completed the goal
                 if not turn.tool_calls:
-                    content_lower = (turn.content or "").lower()
-                    # Detect premature deferral to user or incomplete generation
-                    premature_deferral = any(p in content_lower for p in [
-                        "screen par check", "check karein", "check kijiye", "check your screen",
-                        "generate kar raha", "is generating", "ab main", "ab check", "now i will",
-                        "please login", "login kar lein", "login nahi hain", "login karke"
-                    ])
-                    # Detect if previous action was merely opening or initial typing
-                    last_was_initial_gui = False
+                    content_text = (turn.content or "").strip()
+                    # 1. Structural check: did the assistant ask a question or defer instead of finishing?
+                    is_asking_question = "?" in content_text
+
+                    # 2. Sequential execution check: was the previous action an intermediate step?
+                    last_action_name = None
                     if history:
                         for h in reversed(history):
                             if h.get("role") == "tool":
-                                if h.get("name") in ("browser_navigate", "gui_type_string", "gui_mouse_action"):
-                                    last_was_initial_gui = True
+                                last_action_name = h.get("name")
                                 break
 
-                    if (premature_deferral or (last_was_initial_gui and step <= 3)) and continuation_count < 2:
+                    # Intermediate actions that require observation/interaction to be considered complete
+                    is_intermediate_action = last_action_name in ("browser_navigate", "gui_type_string")
+
+                    # 3. Dynamic evaluation: early step without observation or asking question
+                    is_premature = (is_intermediate_action or (is_asking_question and step <= 4)) and continuation_count < 2
+
+                    if is_premature:
                         continuation_count += 1
                         log.info(
-                            "Autonomous Continuation Guard triggered at step %d (deferral=%s, initial_gui=%s).",
-                            step, premature_deferral, last_was_initial_gui
+                            "Dynamic Autonomous Continuation Guard triggered at step %d (intermediate=%s, question=%s).",
+                            step, is_intermediate_action, is_asking_question
                         )
                         continuation_msg = {
                             "role": "user",
                             "content": (
-                                f"[SYSTEM NOTIFICATION - 100% AUTONOMOUS COMPLETION REQUIRED]: "
-                                f"The user asked: \"{user_goal}\". You have NOT finished this task yet! "
-                                f"DO NOT ask the user to check their screen, login, or perform actions. "
-                                f"You have direct full control over the OS and browser. "
-                                f"If you are waiting for image or content generation, call `wait_and_observe(seconds=8)`. "
-                                f"If you need to view the page or search results, call `gui_scroll` or `capture_desktop_view`. "
-                                f"If you need to click or interact, call `gui_mouse_action`. "
-                                f"Continue your autonomous execution NOW using your tools until the goal is 100% complete on screen!"
+                                f"[SYSTEM NOTIFICATION - 100% DYNAMIC AUTONOMOUS WORKFLOW]: "
+                                f"You have initiated an action for the goal: \"{user_goal}\", but the final result is not verified on screen yet. "
+                                f"Do not defer, wait for the user, or ask questions. "
+                                f"Dynamically inspect the screen, scroll, or observe the updated state using your tools "
+                                f"(`capture_desktop_view`, `wait_and_observe`, `gui_scroll`, `gui_mouse_action`) "
+                                f"and proceed until the full objective is completely achieved!"
                             )
                         }
                         history.append(continuation_msg)
