@@ -26,3 +26,11 @@ __pycache__/
 Thumbs.db
 .vs/
 .idea/
+
+# YouTube Automator Ephemeral Storage & Rendered Media
+modules/youtube_automator/storage/cache/
+modules/youtube_automator/storage/rendered/
+modules/youtube_automator/storage/db/*.db
+modules/youtube_automator/storage/db/*.db-wal
+modules/youtube_automator/storage/db/*.db-shm
+!modules/youtube_automator/storage/assets/

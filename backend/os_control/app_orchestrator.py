@@ -1,4 +1,4 @@
-"""
+r"""
 Sub-Module 3.2 / 5: Universal Application Controller & Desktop Recipes.
 
 Provides high-level semantic workflows for controlling external desktop software:
@@ -70,7 +70,7 @@ class AppOrchestrator:
         return {"ok": True, "action": "visual_studio_stop_debugging", "hotkey": "Shift+F5"}
 
     def vs_open_error_list(self) -> dict[str, Any]:
-        """Brings up the Visual Studio Error List window using chord Ctrl+\, E."""
+        r"""Brings up the Visual Studio Error List window using chord Ctrl+\, E."""
         wins = find_windows("devenv")
         if not wins:
             return {"ok": False, "error": "Visual Studio is not running."}

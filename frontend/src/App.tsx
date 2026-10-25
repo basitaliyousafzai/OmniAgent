@@ -10,6 +10,7 @@ import { StatusBar } from "./components/StatusBar";
 import { SettingsModal } from "./components/SettingsModal";
 import { TelemetryDeck } from "./components/TelemetryDeck";
 import { AgentTeamView } from "./components/AgentTeamView";
+import { YouTubeDashboard } from "./components/YouTubeDashboard";
 import { useAgentSocket } from "./hooks/useAgentSocket";
 import { SystemStatus } from "./types";
 
@@ -120,6 +121,8 @@ export const App: React.FC = () => {
                 activeTarget="OmniAgent Multi-Agent Swarm"
               />
             )}
+
+            {activeTab === "youtube" && <YouTubeDashboard />}
 
             {activeTab === "terminal" && <TerminalView />}
 

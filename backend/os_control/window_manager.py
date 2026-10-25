@@ -24,11 +24,12 @@ from typing import Any, Optional
 
 import psutil
 
+import sys
 from config import IS_MAC, IS_WINDOWS
 
 log = logging.getLogger("omniagent.windows")
 
-if IS_WINDOWS:
+if sys.platform == "win32" or IS_WINDOWS:
     import ctypes
     from ctypes import wintypes
 

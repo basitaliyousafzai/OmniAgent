@@ -1,0 +1,28 @@
+{
+  "_comment": "OmniAgent OS Master Configuration Store",
+  "version": "2.0.0",
+  "host": "127.0.0.1",
+  "backend_port": 8000,
+  "frontend_port": 3000,
+  "default_provider": "gemini",
+  "default_model": "gemini-2.5-flash",
+  "fallback_chain": ["gemini", "openrouter", "anthropic", "openai", "ollama"],
+  "limits": {
+    "max_agent_steps": 40,
+    "approval_timeout_seconds": 300,
+    "shell_timeout_seconds": 120,
+    "max_cpu_threads": 4,
+    "max_ram_gb": 3.5
+  },
+  "sensory": {
+    "whisper_model": "base",
+    "tts_enabled": false,
+    "tts_rate": 185
+  },
+  "modules": {
+    "youtube_automator": {
+      "enabled": true,
+      "config_file": "config/youtube_config.json"
+    }
+  }
+}

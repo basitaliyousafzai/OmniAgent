@@ -1,14 +1,16 @@
 <div align="center">
 
 # 🌐 OmniAgent OS
-### Sovereign Multimodal Autonomous Desktop Agent & Operating System Controller
+### Sovereign Multimodal Autonomous Desktop Agent & YouTube Video Factory
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB.svg?logo=python&logoColor=white)](https://python.org)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React 18](https://img.shields.io/badge/Frontend-React_18-61DAFB.svg?logo=react&logoColor=black)](https://react.dev)
 [![Vite 5](https://img.shields.io/badge/Bundler-Vite_5-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev)
-[![Monaco Editor](https://img.shields.io/badge/Editor-Monaco-1E1E1E.svg)](https://microsoft.github.io/monaco-editor/)
+[![FFmpeg](https://img.shields.io/badge/Video-FFmpeg_CPU_Ultrafast-007808.svg?logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
+[![EBU R128](https://img.shields.io/badge/Audio-EBU_R128_--14LUFS-FF0055.svg)](#-subsystem-autonomous-youtube-video-factory)
+[![SQLite WAL](https://img.shields.io/badge/Database-SQLite_WAL-003B57.svg?logo=sqlite&logoColor=white)](#-database--state-ledger-architecture)
 [![Platform Windows](https://img.shields.io/badge/Platform-Windows_10%2F11-0078D6.svg?logo=windows&logoColor=white)](https://microsoft.com/windows)
 
 <p align="center">
@@ -16,22 +18,47 @@
 </p>
 
 <p align="center">
-  <b>OmniAgent OS</b> is an autonomous, full-stack, multimodal operating system controller that bridges LLM reasoning with native computer use. Operating as a <b>100% native standalone desktop application</b> (zero browser tabs or URLs), it executes computer vision, keyboard/mouse actions, and deep process control across <b>Visual Studio, SQL Server Management Studio (SSMS), Terminal Consoles, and Web Browsers</b> with an integrated Human-in-the-Loop Safety Gate.
+  <b>OmniAgent OS</b> is a sovereign, full-stack, multimodal operating system controller that bridges autonomous LLM reasoning with native computer use. Operating as a <b>100% native standalone desktop application</b> (zero browser chrome or URLs), it executes computer vision, keyboard/mouse actions, and deep process control across <b>Visual Studio, SQL Server Management Studio (SSMS), Terminal Consoles, and Web Browsers</b> with an integrated <b>Human-in-the-Loop Safety Gate</b> and an autonomous <b>Zero-VRAM, 100% Free YouTube Shorts & Video Podcast Pipeline</b>.
 </p>
 
 ---
 
 [Key Capabilities](#-key-capabilities) •
-[Architecture](#-system-architecture) •
 [UI Showcase](#-ui-showcase) •
+[System Architecture](#-system-architecture) •
+[YouTube Automator Subsystem](#-subsystem-autonomous-youtube-video-factory) •
+[Master Tool Registry](#-master-tool-registry) •
 [Quickstart](#-quickstart) •
 [Safety Fabric](#-human-in-the-loop-safety-fabric) •
-[Master Tool Registry](#-master-tool-registry) •
 [Uninstall & Cleanup](#-uninstaller--clean-removal)
 
 ---
 
 </div>
+
+## 📸 UI Showcase
+
+<div align="center">
+
+### 🖥️ 1. Cyberpunk Desktop HUD & Autonomous OS Controller
+<img src="docs/assets/dashboard.jpg" alt="OmniAgent OS Cyberpunk Dashboard Showcase" width="100%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+<p><i>OmniAgent OS Cyberpunk HUD: Integrated Monaco Editor, Autonomous ReAct Reasoning Stream, Interactive Safety Gate Modal, and Live Audio Frequency Visualizer.</i></p>
+
+<br>
+
+### 🎬 2. Autonomous YouTube Video Factory Dashboard
+<img src="docs/assets/youtube_dashboard.jpg" alt="OmniAgent YouTube Automator Dashboard Showcase" width="100%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+<p><i>YouTube Automator Subsystem: Channel Telemetry, Active Pipeline Status, 9:16 Video Player, Rolling Topic History, EBU R128 Audio Analytics, and Idempotency Ledger.</i></p>
+
+<br>
+
+### ⚡ 3. 6-Stage Autonomous Pipeline Workflow
+<img src="docs/assets/youtube_pipeline_flow.jpg" alt="6-Stage Autonomous Video Pipeline Workflow Diagram" width="100%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+<p><i>Headless Pipeline: Multi-Modal Scripting → Dual Neural Voice Synthesis → Vertical 4K B-Roll → EBU R128 Audio Mastering → CPU Video Composition → Resumable YouTube Upload.</i></p>
+
+</div>
+
+---
 
 ## 🚀 Key Capabilities
 
@@ -41,8 +68,8 @@
 * **Zero System Pollution:** Bootstraps portable CPython and maintains all dependencies, models, and caches strictly within the local project folder.
 
 ### 🧠 2. Universal Multi-Provider Gateway
-* **Supported Engines:** Seamless streaming integration with **OpenRouter**, **Google Gemini** (Gemini 3.5 / 3.8 Flash), **Anthropic Claude** (Claude Sonnet 4.5), **OpenAI** (GPT-4o), **xAI Grok**, and local offline **Ollama / vLLM / LM Studio**.
-* **Reasoning Thought Signatures:** Full preservation of Google Gemini 3 `thought_signature` encrypted tokens during multi-turn function calling.
+* **Supported Engines:** Seamless streaming integration with **OpenRouter**, **Google Gemini** (Gemini 2.5 / Flash), **Anthropic Claude** (Claude Sonnet 3.7 / 3.5), **OpenAI** (GPT-4o), **xAI Grok**, and local offline **Ollama / vLLM / LM Studio**.
+* **Reasoning Thought Signatures:** Full preservation of Google Gemini `thought_signature` encrypted tokens during multi-turn function calling.
 * **Intelligent Failover:** Automatic fallback routing across providers with credit exhaustion (HTTP 402/429) protection.
 * **Token Budget Optimizer:** Intelligently caches visual context and compacts conversation history within token limits.
 
@@ -68,12 +95,28 @@
 
 ---
 
-## 📸 UI Showcase
+## 🎬 Subsystem: Autonomous YouTube Video Factory
 
-<div align="center">
-  <img src="docs/assets/dashboard.jpg" alt="OmniAgent OS Cyberpunk Dashboard Showcase" width="100%" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-  <p><i>OmniAgent OS Cyberpunk HUD: Integrated Monaco Editor, Autonomous ReAct Reasoning Stream, Interactive Safety Gate Modal, and Live Audio Frequency Visualizer.</i></p>
-</div>
+OmniAgent OS features a built-in, completely autonomous video creation and publishing factory located in [`modules/youtube_automator`](modules/youtube_automator/README.md).
+
+### 💎 Zero-Cost, Pure-CPU Hardware Profile
+* **0 MB GPU VRAM:** Runs on pure CPU with `-c:v libx264 -preset ultrafast -threads 4` (no NVENC/CUDA requirements; runs on integrated graphics or low-power servers).
+* **$0.00 Cloud Rendering Expense:** 100% locally rendered using FFmpeg 9.0+.
+* **$0.00 Neural Voice Expense:** Free dual-voice narration powered by Microsoft Edge TTS (`en-US-ChristopherNeural` and `en-US-EmmaNeural`).
+* **$0.00 Stock Footage Expense:** Free 4K vertical B-roll queries via Pexels API with stylish procedural FFmpeg fallbacks.
+
+### ⚙️ The 6-Stage Production Pipeline
+1. **Script Engine (`core/script_engine.py`):** Multi-modal LLM router (Gemini / OpenRouter / Ollama) generating high-retention 3-act viral hooks or 2-speaker podcast debates.
+2. **Voice Synthesizer (`core/voice_synthesizer.py`):** Edge-TTS speech generation with sentence boundary capture and word-interpolated exact `.srt` captions.
+3. **Media Retriever (`core/media_retriever.py`):** Queries Pexels for vertical HD/4K videos (`orientation=portrait`), falling back gracefully to procedural chromatic animations.
+4. **Audio Master Engine (`core/audio_master.py`):** Two-pass **EBU R128 loudness normalization** (-14.0 LUFS integrated loudness, -1.5 dBTP true peak) with automatic background music ducking (-14 dB).
+5. **Video Compositor (`core/video_compositor.py`):** Ken Burns image motion engine (`zoompan`), B-roll standardizer (1080x1920 9:16 vertical), and bold yellow/black safe-zone burned captions (`MarginV=260`).
+6. **Resumable YouTube Uploader (`core/uploader.py`):** Resumable chunked upload over YouTube Data API v3 with exponential retry backoff and simulated dry-run validation.
+
+### 🛡️ Daily Idempotency & SQLite WAL Ledger
+* **Idempotency Gatekeeper:** Queries the SQLite WAL ledger for today's local date (`YYYY-MM-DD`). If a `COMPLETED` upload exists, the orchestrator terminates in **`< 100ms`**, preventing duplicate uploads if Windows reboots multiple times.
+* **Anti-Repetition Topic Memory:** Maintains a rolling 30-day topic history buffer injected into LLM prompts as negative constraints.
+* **Ephemeral Cache Purge:** Cleans up intermediate clips and audio upon successful publishing.
 
 ---
 
@@ -86,7 +129,7 @@ flowchart TB
         B["Monaco Code Editor"]
         C["Interactive Terminal"]
         D["Human Safety Modal"]
-        E["Live Display & Audio Monitor"]
+        E["YouTube Automator Dashboard"]
     end
 
     subgraph Core ["FastAPI Master Backend (:8000)"]
@@ -95,41 +138,47 @@ flowchart TB
         H["Universal Provider Gateway"]
         I["Context Trimmer & Token Budget"]
         J["Local Secret Vault"]
+        K["YouTube Router & SSE Streams"]
     end
 
-    subgraph Safety ["Safety & Governance Fabric"]
-        K["Regex Guardrails Engine"]
-        L["Approval Bridge"]
-        M["Emergency Kill Switch (Ctrl+Esc)"]
-        N["Audit Logger"]
+    subgraph YouTubeEngine ["Autonomous YouTube Subsystem (modules/youtube_automator)"]
+        YT1["Master Orchestrator"]
+        YT2["Script Engine (Gemini/OpenRouter/Ollama)"]
+        YT3["Edge-TTS Dual Voice Synthesizer"]
+        YT4["Pexels & Procedural Media Retriever"]
+        YT5["EBU R128 Audio Master (-14 LUFS)"]
+        YT6["CPU FFmpeg Video Compositor (1080x1920)"]
+        YT7["Resumable YouTube Data API v3 Uploader"]
+        YT8["SQLite WAL Ledger & Idempotency Gatekeeper"]
     end
 
     subgraph OSPlane ["Desktop Automation Plane"]
-        O["Window Manager & Resolver"]
-        P["GUI Input Controller (PyAutoGUI)"]
-        Q["UI Automation Tree Inspector"]
-        R["Sandboxed Shell Runner"]
+        L["Window Manager & Resolver"]
+        M["GUI Input Controller (PyAutoGUI)"]
+        N["UI Automation Tree Inspector"]
+        O["Sandboxed Shell Runner"]
     end
 
-    subgraph Sensory ["Multimodal Sensory Subsystem"]
-        S["Screen Capture Engine"]
-        T["Coordinate Mapper 0-1000"]
-        U["Offline Whisper STT"]
-        V["Offline Pyttsx3 TTS"]
+    subgraph Safety ["Safety & Governance Fabric"]
+        P["Regex Guardrails Engine"]
+        Q["Approval Bridge"]
+        R["Emergency Kill Switch (Ctrl+Esc)"]
+        S["Audit Logger"]
     end
 
     subgraph External ["External Desktop Targets"]
-        W["Microsoft Visual Studio"]
-        X["SQL Server Management Studio"]
-        Y["Browsers & Terminals"]
+        T["Microsoft Visual Studio"]
+        U["SQL Server Management Studio"]
+        V["Browsers & Terminals"]
+        W["YouTube Channel"]
     end
 
-    UI <-->|"WebSocket / REST"| Core
+    UI <-->|"WebSocket / REST / SSE"| Core
     Core --> Safety
     Core --> OSPlane
-    Core --> Sensory
+    Core --> YouTubeEngine
     OSPlane --> External
-    Sensory --> External
+    YouTubeEngine --> W
     Safety -->|"Interrupt / Abort"| OSPlane
 ```
 
@@ -145,12 +194,37 @@ run_setup.bat
 *(Or double-click the **OmniAgent OS** shortcut on your Windows desktop).*
 
 The launcher automatically:
-1. Validates or downloads an isolated portable CPython 3.11 runtime into `.runtime/`.
-2. Creates an isolated virtual environment in `.venv/` and installs backend dependencies.
-3. Installs frontend packages into `frontend/node_modules/`.
+1. Validates or bootstraps an isolated Python runtime into `.venv/`.
+2. Installs backend dependencies (`fastapi`, `uvicorn`, `pywin32`, `edge-tts`, `google-api-python-client`, etc.).
+3. Builds frontend packages into `frontend/dist/`.
 4. Launches OmniAgent OS in sovereign desktop window mode.
 
-### Option 2: Manual Developer Setup
+---
+
+### Option 2: 1-Click YouTube Pipeline Run
+To generate a video right now or test in dry-run mode:
+
+```bash
+# Test complete pipeline without publishing to YouTube
+python modules/youtube_automator/orchestrator.py --dry-run --force
+
+# Live generation and upload
+python modules/youtube_automator/orchestrator.py
+```
+
+Or double-click:
+```cmd
+scripts\start_youtube.bat
+```
+
+For silent headless background scheduling (Windows Task Scheduler):
+```cmd
+wscript scripts\run_youtube_silent.vbs
+```
+
+---
+
+### Option 3: Manual Developer Setup
 
 #### 1. Clone the repository
 ```bash
@@ -162,7 +236,7 @@ cd OmniAgent
 ```bash
 python -m venv .venv
 .\.venv\Scripts\activate
-pip install -r backend/requirements.txt
+pip install -r backend/requirements.txt -r modules/youtube_automator/requirements.txt
 ```
 
 #### 3. Build Frontend Assets
@@ -182,6 +256,7 @@ Edit `.env.local`:
 ```env
 GEMINI_API_KEY="your-google-gemini-key"
 OPENROUTER_API_KEY="your-openrouter-key"
+PEXELS_API_KEY="your-pexels-api-key"
 ```
 
 #### 5. Launch the Desktop Application
@@ -249,5 +324,5 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 ---
 
 <div align="center">
-  <sub>Engineered with precision for autonomous computing. Built by <a href="https://github.com/basitaliyousafzai">Basit Ali Yousafzai</a>.</sub>
+  <sub>Engineered with precision for autonomous computing and automated media production.<br>Built by <a href="https://github.com/basitaliyousafzai">Basit Ali Yousafzai</a>.</sub>
 </div>

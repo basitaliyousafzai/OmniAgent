@@ -89,6 +89,10 @@ app.add_middleware(
 if SCREENSHOT_DIR.exists():
     app.mount("/screenshots", StaticFiles(directory=str(SCREENSHOT_DIR)), name="screenshots")
 
+# Mount Autonomous YouTube Production Subsystem Router
+from routers.youtube_router import router as youtube_router
+app.include_router(youtube_router)
+
 FRONTEND_DIST: Path = PROJECT_ROOT / "frontend" / "dist"
 
 

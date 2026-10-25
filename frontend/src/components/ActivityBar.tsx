@@ -9,10 +9,11 @@ import {
   Sparkles, 
   RefreshCw,
   Zap,
-  Users
+  Users,
+  Film
 } from "lucide-react";
 
-export type ActiveTab = "explorer" | "os_control" | "team" | "terminal" | "audit";
+export type ActiveTab = "explorer" | "os_control" | "team" | "youtube" | "terminal" | "audit";
 
 interface ActivityBarProps {
   activeTab: ActiveTab;
@@ -93,6 +94,22 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
           <Users className="w-5 h-5" />
           {activeTab === "team" && (
             <span className="absolute -left-1 w-1 h-5 bg-cyan-400 rounded-r-full" />
+          )}
+        </button>
+
+        {/* Autonomous YouTube Shorts & Podcast Production Subsystem */}
+        <button
+          onClick={() => onSelectTab("youtube")}
+          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all relative ${
+            activeTab === "youtube"
+              ? "bg-red-500/20 text-red-400 border border-red-500/60 shadow-[0_0_12px_rgba(239,68,68,0.4)]"
+              : "text-gray-400 hover:text-red-400 hover:bg-white/5"
+          }`}
+          title="Autonomous YouTube Production Engine (Shorts & Podcasts)"
+        >
+          <Film className="w-5 h-5" />
+          {activeTab === "youtube" && (
+            <span className="absolute -left-1 w-1 h-5 bg-red-400 rounded-r-full" />
           )}
         </button>
 
